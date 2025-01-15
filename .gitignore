@@ -1,0 +1,45 @@
+# Node.js modules
+node_modules/
+
+# Next.js build output
+.next/
+
+# Production build output
+out/
+
+# Log files
+*.log
+
+# Dependency directories
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE files
+.vscode/
+.idea/
+
+# Mac system files
+.DS_Store
+
+# Windows system files
+Thumbs.db
+
+# Next.js export output
+*.next/
+out/
+
+# Next.js serverless deployment (optional)
+.vercel/
+
+# Yarn 2+ specific files (if using Yarn 2+)
+.pnp.*
+
+# Next.js-specific files
+package-lock.json
