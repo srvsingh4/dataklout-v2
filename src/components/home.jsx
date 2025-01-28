@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Header from "./header";
+import Nav from "../nav";
 
-import Header from "./components/header";
 function Home() {
   const navigate = useNavigate();
   useEffect(() => {
@@ -11,9 +12,13 @@ function Home() {
   }, [navigate]);
 
   return (
-    <div className=" text-blue-600 text-2xl font-extrabold">
+    <div>
       <Header />
-      Home
+      <Nav />
+      <div className=" m-4 flex flex-row pb-2">
+        <div className=" h-32 border bg-white w-1/2 mr-2"></div>
+        <div className=" h-32 border bg-white w-1/2"></div>
+      </div>
     </div>
   );
 }

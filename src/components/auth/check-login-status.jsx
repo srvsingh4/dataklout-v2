@@ -7,11 +7,11 @@ const CheckLoginStatus = () => {
    * Check login Status
    */
   useEffect(() => {
-    if (sessionStorage.getItem("access_token")) {
+    if (localStorage.getItem("access_token")) {
       setLogin(true);
     }
-  });
-
+  }, []);
+  // console.log(loginStatus);
   return { loginStatus };
 };
 

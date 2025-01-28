@@ -19,6 +19,7 @@ const Login = () => {
       navigate("/");
     }
   }, [navigate]);
+  console.log(error);
   const handleSubmit = (e) => {
     e.preventDefault();
     var login_info = { username, password };
@@ -38,7 +39,7 @@ const Login = () => {
       .then((data) => {
         setIsPending(false);
         localStorage.setItem("access_token", data["access_token"]);
-        localStorage.setItem("access_token", data["access_token"]);
+        // localStorage.setItem("access_token", data["access_token"]);
         localStorage.setItem("refresh_token", data["refresh_token"]);
         localStorage.setItem("client", data["client"]);
         localStorage.setItem("client_id", data["client_id"]);
@@ -61,6 +62,7 @@ const Login = () => {
           data["critical_factor_module"]
         );
         navigate("/");
+        window.location.reload();
       })
       .catch((err) => {
         if (err.name === "AbortError") {

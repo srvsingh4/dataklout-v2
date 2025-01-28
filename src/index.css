@@ -10,6 +10,25 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+::-webkit-scrollbar {
+  width: 6px; /* Width of the scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Background of the scrollbar track */
+  border-radius: 10px; /* Rounded corners for the track */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888; /* Color of the scrollbar thumb */
+  border-radius: 10px; /* Rounded corners for the thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Color of the scrollbar thumb on hover */
+}
+
 .image {
   background-image: url("assets/images/login-hero-Image.png");
   background-size: cover;
@@ -17,4 +36,44 @@
   background-position: center;
   background-repeat: no-repeat;
   /* height: 100vh; */
+}
+.hover-fill-red:hover {
+  filter: invert(31%) sepia(100%) saturate(7478%) hue-rotate(340deg)
+    brightness(97%) contrast(104%);
+}
+.fill-red {
+  filter: invert(31%) sepia(100%) saturate(7478%) hue-rotate(340deg)
+    brightness(97%) contrast(104%);
+}
+.fill-whitee {
+  filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%)
+    contrast(100%);
+}
+
+.fill-wt:hover {
+  filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%)
+    contrast(100%);
+}
+.fill-green {
+  filter: invert(48%) sepia(91%) saturate(355%) hue-rotate(85deg)
+    brightness(95%) contrast(89%);
+}
+
+.active {
+  background-color: #271078;
+  color: white;
+}
+tbody tr:nth-child(odd) {
+  background: #f6f6f6;
+}
+
+.custom-select {
+  padding-right: 2.5rem; /* Adjust padding to shift the dropdown icon */
+  -webkit-appearance: none; /* Remove default dropdown arrow */
+  -moz-appearance: none; /* Remove default dropdown arrow */
+  appearance: none; /* Remove default dropdown arrow */
+  background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="gray" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
 }
