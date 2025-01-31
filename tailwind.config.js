@@ -1,5 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  build: {
+    target: "esnext", // Ensure modern module support
+  },
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {},
@@ -7,5 +10,10 @@ export default {
   plugins: [],
   corePlugins: {
     apply: true,
+  },
+  server: {
+    mimeTypes: {
+      js: "text/javascript",
+    },
   },
 };
