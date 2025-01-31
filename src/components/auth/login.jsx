@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/images/new-logo.png";
-import passwordIcon from "../../assets/icons/password-icon.svg";
+import passwordIcon from "../../assets/icons/password.svg";
 import userIcon from "../../assets/icons/user-icon.svg";
 import rightArrow from "../../assets/icons/vector.svg";
 import formImg from "../../assets/images/Login-form-image.png";
