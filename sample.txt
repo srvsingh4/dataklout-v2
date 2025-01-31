@@ -1,0 +1,20 @@
+
+
+
+
+
+
+
+ {supportingInfoError && (
+                  <div className="flex items-center mt-1">
+                    <img
+                      src={errorIcon}
+                      alt="error-icon"
+                      className="h-4 w-4 mr-1"
+                    />
+                    <span className=" text-[#f50a0a] text-[14px]">
+                      {supportingInfoError}{" "}
+                    </span>
+                    {/* {uploadError && <p className="errorColor">{uploadError}</p>} */}
+                  </div>
+                )}

@@ -5,10 +5,10 @@ const Pagination = ({ currentPage, totalPages, onPageChange, totalresult }) => {
     currentPage: PropTypes.number.isRequired,
     totalPages: PropTypes.number.isRequired,
     onPageChange: PropTypes.func.isRequired,
-    totalresult: PropTypes.number,
+    totalresult: PropTypes.number.isRequired,
   };
 
-  console.log("current page", currentPage);
+  // console.log("current page", currentPage);
   let startPage, endPage;
 
   if (totalPages <= 5) {
@@ -30,7 +30,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange, totalresult }) => {
   );
 
   const handlePageClick = (page) => {
-    console.log("function ", page);
+    // console.log("function ", page);
     onPageChange(page);
   };
 
