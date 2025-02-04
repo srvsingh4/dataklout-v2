@@ -52,8 +52,10 @@ function CallList() {
   const [uploadPending, setUploadPending] = useState(false);
   const [uploadError, setUploadError] = useState(null);
   const [callUploadProgress, setCallUploadProgress] = useState(0);
-
+  const [fileInputKey, setFileInputKey] = useState(0);
+  const [bulkerror, setBulkerror] = useState({});
   // const [callUploadSucess, setCallUploadSucess] = useState(false);
+  const [addBulkCall, setAddBulkCall] = useState([]);
   const [uploadData, setUploadData] = useState({
     call_type: "",
     product: "",
@@ -62,6 +64,14 @@ function CallList() {
     file: null,
   });
 
+  const [bulkcalldata, setBulkcalldata] = useState({
+    call_type: "",
+    product: "",
+    language_code: "",
+    customer_id: "",
+    files: null,
+  });
+  //  const [totalDuration, setTotalDuration] = useState(0);
   let url = window.location.href;
   url = url.replace(/^.*\/\/[^\/]+/, "");
 
@@ -163,11 +173,21 @@ function CallList() {
     }
   }, [addcall]);
 
+  useEffect(() => {
+    setSupportingInfoErrors({});
+    setBulkerror({});
+  }, [bulkupload]);
+
   const handleUpload = function (key, value) {
     setUploadData({ ...uploadData, [key]: value });
   };
   const clearError = (key) => {
     setSupportingInfoErrors((prevErrors) => {
+      const newErrors = { ...prevErrors };
+      delete newErrors[key];
+      return newErrors;
+    });
+    setBulkerror((prevErrors) => {
       const newErrors = { ...prevErrors };
       delete newErrors[key];
       return newErrors;
@@ -252,7 +272,6 @@ function CallList() {
       });
       setAddcall(false);
       fetchCallList();
-      setAddcall(false);
       toast.success(
         <div className="flex flex-col">
           <div>
@@ -278,7 +297,147 @@ function CallList() {
     }
   };
 
-  const uploadBulkCallRecording = function () {};
+  const handelBulkcall = (key, value) => {
+    setBulkerror(false);
+    setBulkcalldata({ ...bulkcalldata, [key]: value });
+  };
+
+  const addBulklist = function (e) {
+    e.preventDefault();
+    setBulkerror({});
+
+    const error = {};
+
+    if (!bulkcalldata?.call_type) {
+      error.call_type = "Please Select Call Type";
+      // console.log(error);
+    }
+
+    if (!bulkcalldata?.product) {
+      error.product = "Please Select one product";
+    }
+
+    if (!bulkcalldata?.language_code) {
+      error.language_code = "Please Select one language";
+    }
+
+    if (!bulkcalldata?.customer_id) {
+      error.customer_id = "Please Select one customer";
+    }
+
+    if (!bulkcalldata?.files) {
+      error.files = "Please select one audio recording file";
+    }
+    // if (bulkcalldata?.files.name.split(".").pop() !== "wav") {
+    //   setSupportingInfoError("Please check the call recording format i.e wav");
+    //   return;
+    // }
+
+    // console.log(bulkcalldata);
+    // if block here can be eliminated but i m just being double sure about the call data by putting a checker again  setting the call error info
+    if (Object.keys(error).length > 0) {
+      setBulkerror(error);
+      // console.log("hyhy0", error);
+      return;
+    }
+    if (
+      bulkcalldata.call_type &&
+      bulkcalldata.product &&
+      bulkcalldata.language_code &&
+      bulkcalldata.customer_id &&
+      bulkcalldata.files
+    ) {
+      setAddBulkCall((prev) => [...prev, bulkcalldata]);
+      // setCallName((prev) => [...prev, bulkcalldata.files]);
+      setBulkcalldata({
+        call_type: "",
+        product: "",
+        language_code: "",
+        customer_id: "",
+        files: null,
+      });
+
+      setFileInputKey((prevKey) => prevKey + 1);
+    } else {
+      toast.error("Enter Call Details");
+    }
+  };
+
+  const handleDeleteCall = (index) => {
+    setAddBulkCall((prevCalls) => prevCalls.filter((_, i) => i !== index));
+  };
+  console.log("bulkkkkkkkkkk", bulkcalldata);
+
+  // console.log("supporting error --------------------", bulkerror);
+  console.log("call dataaaaaaa", addBulkCall);
+
+  const uploadBulkCallRecording = async function () {
+    setUploadPending(true);
+    setisPending(true);
+    var url = "https://fb.dataklout.com/api/call/tbulk_upload/";
+    let formData = new FormData();
+
+    addBulkCall.forEach((call, index) => {
+      // console.log(call);
+      // console.log(Object.keys(call));
+      Object.keys(call).forEach((key) => {
+        if (key === "files" && call[key] instanceof File) {
+          formData.append(`${key}`, call[key]);
+        } else {
+          formData.append(`${key}`, call[key]);
+        }
+      });
+    });
+
+    await axios
+      .request({
+        method: "post",
+        url: url,
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("access_token"),
+          "Content-Type": "multipart/form-data",
+        },
+        data: formData,
+      })
+      .then((response) => {
+        setUploadPending(false);
+        setisPending(false);
+        setUploadError(null);
+        setAddBulkCall([]);
+        setBulkupload(false);
+
+        if (response.data.message === "success") {
+          setBulkcalldata({
+            call_type: "",
+            product: "",
+            language_code: "",
+            customer_id: "",
+            file: null,
+          });
+          setAddcall(false);
+          fetchCallList();
+          toast.success(
+            <div className="flex flex-col">
+              <div>
+                <div>
+                  {response.data.message[0].toUpperCase() +
+                    response.data.message.slice(1)}
+                </div>
+              </div>
+              <span>Your call uploaded successfully</span>
+            </div>
+          );
+        } else {
+          setUploadPending(false);
+          setUploadError(response.data.message);
+        }
+      })
+      .catch((error) => {
+        console.error("Error uploading call:", error);
+        setUploadPending(false);
+        setUploadError("An error occurred while uploading the call.");
+      });
+  };
 
   return (
     <div>
@@ -474,7 +633,8 @@ function CallList() {
         <div className="fixed inset-0 flex justify-center bg-gray-500  bg-opacity-90 transition-opacity">
           <div
             className={`bg-white p-12 shadow-lg  w-[1000px] relative rounded-xl m-20 py-6 ${
-              Object.keys(supportingInfoErrors).length
+              Object.keys(supportingInfoErrors).length ||
+              Object.keys(bulkerror).length
                 ? "h-[600px]"
                 : "h-[550px]"
             }`}
@@ -509,11 +669,11 @@ function CallList() {
                     onFocus={() => clearError("call_type")}
                     name="call_type"
                     id="call_type"
-                    value={handleUpload.call_type}
+                    value={uploadData.call_type}
                   >
                     <option
-                      value="Select call type"
-                      selected
+                      value=""
+                      // selected
                       disabled
                       className="text-gray-400"
                     >
@@ -567,11 +727,11 @@ function CallList() {
                     onFocus={() => clearError("customer_id")}
                     name="customer_id"
                     id="customer_id"
-                    value={handleUpload.customer_id}
+                    value={uploadData.customer_id}
                   >
                     <option
-                      value="Select customer"
-                      selected
+                      value=""
+                      // selected
                       disabled
                       className="text-gray-400"
                     >
@@ -579,13 +739,7 @@ function CallList() {
                     </option>
 
                     {supportingInfo?.customer.map((customer, i) => (
-                      <option
-                        key={i}
-                        value={customer?.id}
-                        onChange={(e) =>
-                          handleUpload("customer_id", e.target.value)
-                        }
-                      >
+                      <option key={i} value={customer?.id}>
                         {customer?.first_name}
                       </option>
                     ))}
@@ -625,11 +779,11 @@ function CallList() {
                     onFocus={() => clearError("product")}
                     name="product"
                     id="product"
-                    value={handleUpload.product}
+                    value={uploadData.product}
                   >
                     <option
-                      value="Select customer"
-                      selected
+                      value=""
+                      // selected
                       disabled
                       className="text-gray-400"
                     >
@@ -715,9 +869,9 @@ function CallList() {
                     onFocus={() => clearError("language")}
                     name="language_code"
                     id="language_code"
-                    value={handleUpload.language_code}
+                    value={uploadData.language_code}
                   >
-                    <option value="Select Language" className="text-gray-400">
+                    <option value="" className="text-gray-400">
                       Select Language
                     </option>
                     {supportingInfo.language.map((languageItem, i) => (
@@ -750,27 +904,29 @@ function CallList() {
                       alt="call-icon"
                       className="h-4 w-4 mr-2"
                     ></img>
-                    <label className="text-[16px]">Call Typeee</label>
+                    <label className="text-[16px]">Call Type</label>
                   </span>
 
                   <select
                     className={`mt-2 w-[430px] h-[44px] border  rounded-lg focus:outline-none custom-select px-4 ${
-                      uploadData.call_type ? "text-black" : "text-gray-400"
+                      bulkcalldata.call_type ? "text-black" : "text-gray-400"
                     } focus:text-black cursor-pointer
                    ${
-                     supportingInfoErrors.call_type
+                     bulkerror.call_type
                        ? "border border-[#f50a0a]"
                        : "border-gray-500"
                    }`}
-                    // onChange={(e) => handleUpload("call_type", e.target.value)}
+                    onChange={(e) =>
+                      handelBulkcall("call_type", e.target.value)
+                    }
                     onFocus={() => clearError("call_type")}
                     name="call_type"
                     id="call_type"
-                    value={handleUpload.call_type}
+                    value={bulkcalldata.call_type}
                   >
                     <option
-                      value="Select call type"
-                      selected
+                      value=""
+                      // selected
                       disabled
                       className="text-gray-400"
                     >
@@ -786,7 +942,7 @@ function CallList() {
                       </option>
                     ))}
                   </select>
-                  {supportingInfoErrors.call_type && (
+                  {bulkerror.call_type && (
                     <div className="flex items-center mt-1">
                       <img
                         src={errorIcon}
@@ -794,7 +950,7 @@ function CallList() {
                         className="h-4 w-4 mr-1"
                       />
                       <span className=" text-[#f50a0a] text-[14px]">
-                        {supportingInfoErrors.call_type}{" "}
+                        {bulkerror.call_type}{" "}
                       </span>
                       {/* {uploadError && <p className="errorColor">{uploadError}</p>} */}
                     </div>
@@ -812,23 +968,23 @@ function CallList() {
                   </span>
                   <select
                     className={`mt-2 w-[430px] h-[44px] border rounded-lg focus:outline-none custom-select px-4 ${
-                      uploadData.customer_id ? "text-black" : "text-gray-400"
+                      bulkcalldata.customer_id ? "text-black" : "text-gray-400"
                     } focus:text-black cursor-pointer ${
-                      supportingInfoErrors.customer_id
+                      bulkerror.customer_id
                         ? "border-[#f50a0a] "
                         : "border-gray-500"
                     }`}
-                    // onChange={(e) =>
-                    //   handleUpload("customer_id", e.target.value)
-                    // }
+                    onChange={(e) =>
+                      handelBulkcall("customer_id", e.target.value)
+                    }
                     onFocus={() => clearError("customer_id")}
                     name="customer_id"
                     id="customer_id"
-                    value={handleUpload.customer_id}
+                    value={bulkcalldata.customer_id}
                   >
                     <option
-                      value="Select customer"
-                      selected
+                      value=""
+                      // selected
                       disabled
                       className="text-gray-400"
                     >
@@ -840,14 +996,14 @@ function CallList() {
                         key={i}
                         value={customer?.id}
                         // onChange={(e) =>
-                        //   handleUpload("customer_id", e.target.value)
+                        //   handelBulkcall("customer_id", e.target.value)
                         // }
                       >
                         {customer?.first_name}
                       </option>
                     ))}
                   </select>
-                  {supportingInfoErrors.customer_id && (
+                  {bulkerror.customer_id && (
                     <div className="flex items-center mt-1">
                       <img
                         src={errorIcon}
@@ -855,7 +1011,7 @@ function CallList() {
                         className="h-4 w-4 mr-1"
                       />
                       <span className=" text-[#f50a0a] text-[14px]">
-                        {supportingInfoErrors.customer_id}{" "}
+                        {bulkerror.customer_id}{" "}
                       </span>
                       {/* {uploadError && <p className="errorColor">{uploadError}</p>} */}
                     </div>
@@ -872,21 +1028,21 @@ function CallList() {
                   </span>
                   <select
                     className={`mt-2 w-[430px] h-[44px] border  rounded-lg focus:outline-none custom-select px-4 ${
-                      uploadData.product ? "text-black" : "text-gray-400"
+                      bulkcalldata.product ? "text-black" : "text-gray-400"
                     }  focus:text-black cursor-pointer ${
-                      supportingInfoErrors.product
+                      bulkerror.product
                         ? "border-[#f50a0a] "
                         : "border-gray-500"
                     }`}
-                    // onChange={(e) => handleUpload("product", e.target.value)}
+                    onChange={(e) => handelBulkcall("product", e.target.value)}
                     onFocus={() => clearError("product")}
                     name="product"
                     id="product"
-                    value={handleUpload.product}
+                    value={bulkcalldata.product}
                   >
                     <option
-                      value="Select customer"
-                      selected
+                      value=""
+                      // selected
                       disabled
                       className="text-gray-400"
                     >
@@ -899,7 +1055,7 @@ function CallList() {
                       </option>
                     ))}
                   </select>
-                  {supportingInfoErrors.product && (
+                  {bulkerror.product && (
                     <div className="flex items-center mt-1">
                       <img
                         src={errorIcon}
@@ -907,7 +1063,7 @@ function CallList() {
                         className="h-4 w-4 mr-1"
                       />
                       <span className=" text-[#f50a0a] text-[14px]">
-                        {supportingInfoErrors.product}{" "}
+                        {bulkerror.product}{" "}
                       </span>
                       {/* {uploadError && <p className="errorColor">{uploadError}</p>} */}
                     </div>
@@ -923,20 +1079,19 @@ function CallList() {
                     <label className="text-[16px]">Call Recording</label>
                   </span>
                   <input
+                    key={fileInputKey}
                     type="file"
                     placeholder="Select call recording"
                     className={`mt-2 w-[430px] h-[44px] border rounded-lg focus:outline-none custom-select px-4 py-2 ${
-                      uploadData.file ? "text-black" : "text-gray-400"
+                      bulkcalldata.file ? "text-black" : "text-gray-400"
                     } focus:text-black cursor-pointer ${
-                      supportingInfoErrors.file
-                        ? "border-[#f50a0a] "
-                        : "border-gray-500"
+                      bulkerror.file ? "border-[#f50a0a] " : "border-gray-500"
                     }`}
                     accept=".wav"
-                    // onChange={(e) => handleUpload("file", e.target.files[0])}
-                    onFocus={() => clearError("file")}
+                    onChange={(e) => handelBulkcall("files", e.target.files[0])}
+                    onFocus={() => clearError("files")}
                   />
-                  {supportingInfoErrors.file && (
+                  {bulkerror.files && (
                     <div className="flex items-center mt-1">
                       <img
                         src={errorIcon}
@@ -944,9 +1099,8 @@ function CallList() {
                         className="h-4 w-4 mr-1"
                       />
                       <span className=" text-[#f50a0a] text-[14px]">
-                        {supportingInfoErrors.file}{" "}
+                        {bulkerror.files}{" "}
                       </span>
-                      {/* {uploadError && <p className="errorColor">{uploadError}</p>} */}
                     </div>
                   )}
                 </span>
@@ -961,21 +1115,23 @@ function CallList() {
                   </span>
                   <select
                     className={`mt-2 w-[430px] h-[44px] border rounded-lg focus:outline-none custom-select px-4 ${
-                      uploadData.language_code ? "text-black" : "text-gray-400"
+                      bulkcalldata.language_code
+                        ? "text-black"
+                        : "text-gray-400"
                     }  focus:text-black cursor-pointer ${
-                      supportingInfoErrors.language
+                      bulkerror.language
                         ? "border-[#f50a0a] "
                         : "border-gray-500"
                     }`}
-                    // onChange={(e) =>
-                    //   handleUpload("language_code", e.target.value)
-                    // }
+                    onChange={(e) =>
+                      handelBulkcall("language_code", e.target.value)
+                    }
                     onFocus={() => clearError("language")}
                     name="language_code"
                     id="language_code"
-                    value={handleUpload.language_code}
+                    value={bulkcalldata.language_code}
                   >
-                    <option value="Select Language" className="text-gray-400">
+                    <option value="" className="text-gray-400">
                       Select Language
                     </option>
                     {supportingInfo.language.map((languageItem, i) => (
@@ -984,7 +1140,7 @@ function CallList() {
                       </option>
                     ))}
                   </select>
-                  {supportingInfoErrors.language && (
+                  {bulkerror.language_code && (
                     <div className="flex items-center mt-1">
                       <img
                         src={errorIcon}
@@ -992,7 +1148,7 @@ function CallList() {
                         className="h-4 w-4 mr-1"
                       />
                       <span className=" text-[#f50a0a] text-[14px]">
-                        {supportingInfoErrors.language}{" "}
+                        {bulkerror.language_code}{" "}
                       </span>
                       {/* {uploadError && <p className="errorColor">{uploadError}</p>} */}
                     </div>
@@ -1003,7 +1159,9 @@ function CallList() {
 
             <div
               className="group border border-[#171717] border-dashed custom-dotted-hr text-center flex items-center justify-center mt-2 p-2 rounded-lg hover:bg-[#9C94B8]  text-[#696969] transition-colors duration-200 hover:text-black cursor-pointer"
-              onClick={() => setBulkupload(!bulkupload)}
+              onClick={() => {
+                setBulkupload(!bulkupload);
+              }}
             >
               <img
                 src={uploadgray}
@@ -1037,26 +1195,44 @@ function CallList() {
                   }
                   onclick={() => {
                     setAddcall(false);
-                    setUploadData({});
-                    setSupportingInfoErrors("");
-                    setBulkupload(!bulkupload);
+                    setBulkcalldata({
+                      call_type: "",
+                      product: "",
+                      language_code: "",
+                      customer_id: "",
+                      file: null,
+                    });
+                    setUploadData({
+                      call_type: "",
+                      product: "",
+                      language_code: "",
+                      customer_id: "",
+                      file: null,
+                    });
+                    setBulkupload(false);
+                    setSupportingInfoErrors({});
+                    setBulkerror({});
                   }}
                 />
                 {bulkupload && (
                   <Button
                     name={"Add Call"}
                     classname={`border border-[#171717] hover:border-none text-[16px] flex justify-center items-center p-[10px] hover:bg-orange-600 transition duration-300 ease-out hover:ease-in-out w-[150px] h-[44px] rounded-lg mr-6 hover:text-white`}
-                    onclick={() => {}}
+                    onclick={addBulklist}
                     // imgSrc={uploadIcon}
                   />
                 )}
+
                 <Button
                   name={"Upload"}
-                  classname={`border border-[#171717] hover:border-none text-[16px] flex justify-center items-center p-[10px] hover:bg-[#11AE00] hover:text-white transition duration-300 ease-out hover:ease-in-out w-[150px] h-[44px] rounded-lg bg-[#271078] text-white`}
+                  classname={`border border-[#171717] hover:border-none text-[16px] flex justify-center items-center p-[10px] ${
+                    !isPending ? "hover:bg-[#11AE00]" : ""
+                  } hover:text-white transition duration-300 ease-out hover:ease-in-out w-[150px] h-[44px] rounded-lg bg-[#271078] text-white`}
                   onclick={
                     !bulkupload ? uploadCallRecording : uploadBulkCallRecording
                   }
                   imgSrc={uploadIcon}
+                  isPending={isPending}
                 />
               </div>
             </div>
@@ -1073,29 +1249,35 @@ function CallList() {
               </div>
             )}
             {bulkupload && (
-              <div className="absolute right-[75px] bottom-[175px]">
+              <div
+                className={`absolute right-[75px] ${
+                  bulkerror ? "bottom-[175px]" : "bottom-[175px]"
+                } ${bulkerror ? "" : ""}`}
+              >
                 <div className="h-[105px] w-[425px] ">
-                  <div className=" flex justify-end">Total calls Added: 00</div>
+                  <div className=" flex justify-end">
+                    Total calls Added: {addBulkCall.length}
+                  </div>
                   <div
                     className="overflow-scroll role"
                     style={{ height: "80px" }}
                   >
-                    {[1, 2, 3, 4].length >= 1 ? (
+                    {addBulkCall.length ? (
                       <div className=" flex">
                         <ul className="!list-disc ml-8">
-                          {[1, 2, 3, 4, 5]?.map((e, i) => (
+                          {addBulkCall?.map((e, i) => (
                             <li
                               className=" flex justify-between items-center "
                               key={i}
                             >
-                              - bank loan english.wav
+                              - {e.files.name}
                               <span
                                 className="cursor-pointer"
                                 style={{
                                   marginTop: "4px",
                                   marginLeft: "20px",
                                 }}
-                                // onClick={() => handleDeleteCall(i)}
+                                onClick={() => handleDeleteCall(i)}
                               >
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
@@ -1114,7 +1296,7 @@ function CallList() {
                       </div>
                     ) : (
                       <ul className=" list-disc ml-8">
-                        <li>No Calls Added to upload list</li>
+                        <li>No Calls Added to Upload list</li>
                       </ul>
                     )}
                   </div>
