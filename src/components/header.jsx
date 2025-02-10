@@ -13,6 +13,7 @@ import dataklout from "../assets/Icons/dataklout-logo.svg";
 import mailIcon from "../assets/Icons/mailIcon.svg";
 import addressIcon from "../assets/Icons/address.svg";
 import phoneIcon from "../assets/Icons/phoneIcon.svg";
+import serchIcon from "../assets/Icons/search.svg";
 
 function Header() {
   const services = new Service();
@@ -75,12 +76,15 @@ function Header() {
           onClick={() => navigate("/")}
         />
         {/* </Link> */}
-        <input
-          type="text"
-          // placeholder="Search"
-          className="border-2 border-gray-200 rounded-lg w-1/2 h-[50px] px-4 bg-[#EEEEEE]"
-        />
-        <div className="  flex justify-center  items-center mr-6 border-l-2 border-gray-200">
+        <div className=" w-[640px] relative">
+          <input
+            type="text"
+            placeholder="Search"
+            className=" rounded-lg h-[50px] px-[55px] bg-[#EEEEEE] w-full  placeholder:text-[#8B8B8B]"
+          />
+          <img src={serchIcon} className=" absolute top-3 left-4" />
+        </div>
+        <div className="flex justify-center  items-center mr-6 border-l-2 border-gray-200">
           <span
             className="mr-7 ml-10 cursor-pointer"
             onClick={() => setSupport(true)}
@@ -113,7 +117,7 @@ function Header() {
           >
             <img
               src={`${
-                !localStorage.getItem("image") == "/media/"
+                localStorage.getItem("image") != "/media/"
                   ? services.domain + localStorage.getItem("image")
                   : personIcon
               } `}
@@ -124,9 +128,9 @@ function Header() {
                 // marginBottom: "10px",
               }}
               alt="profile pic"
-              className={`rounded-full ${profiledrop ? "fill-red" : ""} ${
-                url === "/account" ? "fill-red" : ""
-              }`}
+              className={`rounded-full ${
+                profiledrop ? "border border-red-500" : ""
+              } ${url === "/account" ? "fill-red" : ""}`}
             />
             {profiledrop && (
               <div

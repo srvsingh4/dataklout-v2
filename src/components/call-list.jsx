@@ -25,6 +25,7 @@ import uploadgray from "../assets/Icons/uploadgray.svg";
 import { ToastContainer, toast } from "react-toastify";
 import errorIcon from "../assets/Icons/error.svg";
 import PulseLoader from "react-spinners/PulseLoader";
+import Tableskeleton from "./common/tableSkeleton";
 
 function CallList() {
   const services = new Service();
@@ -366,77 +367,93 @@ function CallList() {
   const handleDeleteCall = (index) => {
     setAddBulkCall((prevCalls) => prevCalls.filter((_, i) => i !== index));
   };
-  console.log("bulkkkkkkkkkk", bulkcalldata);
+  // console.log("bulkkkkkkkkkk", bulkcalldata);
 
   // console.log("supporting error --------------------", bulkerror);
   console.log("call dataaaaaaa", addBulkCall);
 
   const uploadBulkCallRecording = async function () {
-    setUploadPending(true);
-    setisPending(true);
-    var url = "https://fb.dataklout.com/api/call/tbulk_upload/";
-    let formData = new FormData();
+    if (addBulkCall.length >= 1) {
+      setUploadPending(true);
+      setisPending(true);
+      var url = "https://fb.dataklout.com/api/call/tbulk_upload/";
+      let formData = new FormData();
 
-    addBulkCall.forEach((call, index) => {
-      // console.log(call);
-      // console.log(Object.keys(call));
-      Object.keys(call).forEach((key) => {
-        if (key === "files" && call[key] instanceof File) {
-          formData.append(`${key}`, call[key]);
-        } else {
-          formData.append(`${key}`, call[key]);
-        }
+      addBulkCall.forEach((call, index) => {
+        // console.log(call);
+        // console.log(Object.keys(call));
+        Object.keys(call).forEach((key) => {
+          if (key === "files" && call[key] instanceof File) {
+            formData.append(`${key}`, call[key]);
+          } else {
+            formData.append(`${key}`, call[key]);
+          }
+        });
       });
-    });
 
-    await axios
-      .request({
-        method: "post",
-        url: url,
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("access_token"),
-          "Content-Type": "multipart/form-data",
-        },
-        data: formData,
-      })
-      .then((response) => {
-        setUploadPending(false);
-        setisPending(false);
-        setUploadError(null);
-        setAddBulkCall([]);
-        setBulkupload(false);
-
-        if (response.data.message === "success") {
-          setBulkcalldata({
-            call_type: "",
-            product: "",
-            language_code: "",
-            customer_id: "",
-            file: null,
-          });
-          setAddcall(false);
-          fetchCallList();
-          toast.success(
-            <div className="flex flex-col">
-              <div>
-                <div>
-                  {response.data.message[0].toUpperCase() +
-                    response.data.message.slice(1)}
-                </div>
-              </div>
-              <span>Your call uploaded successfully</span>
-            </div>
-          );
-        } else {
+      await axios
+        .request({
+          method: "post",
+          url: url,
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("access_token"),
+            "Content-Type": "multipart/form-data",
+          },
+          data: formData,
+        })
+        .then((response) => {
           setUploadPending(false);
-          setUploadError(response.data.message);
-        }
-      })
-      .catch((error) => {
-        console.error("Error uploading call:", error);
-        setUploadPending(false);
-        setUploadError("An error occurred while uploading the call.");
-      });
+          setisPending(false);
+          setUploadError(null);
+          setAddBulkCall([]);
+          setBulkupload(false);
+
+          if (response.data.message === "success") {
+            setBulkcalldata({
+              call_type: "",
+              product: "",
+              language_code: "",
+              customer_id: "",
+              file: null,
+            });
+            setAddcall(false);
+            fetchCallList();
+            toast.success(
+              <div className="flex flex-col">
+                <div>
+                  <div>
+                    {response.data.message[0].toUpperCase() +
+                      response.data.message.slice(1)}
+                  </div>
+                </div>
+                <span>Your call uploaded successfully</span>
+              </div>
+            );
+          } else {
+            setUploadPending(false);
+            setUploadError(response.data.message);
+          }
+        })
+        .catch((error) => {
+          console.error("Error uploading call:", error);
+          setUploadPending(false);
+          setUploadError("An error occurred while uploading the call.");
+        });
+    } else {
+      toast.error(
+        <div className="flex flex-col">
+          <div>Call upload List is empty</div>
+
+          <span>Enter Call Details</span>
+        </div>
+      );
+    }
+  };
+
+  const openCallInsight = function (callId, intent) {
+    if (intent !== 0) {
+      navigate(`/call/${callId}/call-insight`);
+    }
   };
 
   return (
@@ -489,137 +506,130 @@ function CallList() {
               </button>
             </span>
           </div>
-          <table className="w-full mt-4 rounded-[12px] overflow-hidden border-collapse">
-            <thead className="bg-[#717171]">
-              <tr className="text-[#fff]">
-                <th className="text-left p-4 font-medium text-sm border-b border-[#D0D0D0]">
-                  Call Date
-                </th>
-                <th className="text-left p-4 font-medium text-sm border-b border-[#D0D0D0]">
-                  Customer
-                </th>
-                <th className="text-left p-4 font-medium text-sm border-b border-[#D0D0D0]">
-                  Agent
-                </th>
-                <th className="text-left p-4 font-medium text-sm border-b border-[#D0D0D0]">
-                  Call ID
-                </th>
-                <th className="text-left p-4 font-medium text-sm border-b border-[#D0D0D0]">
-                  Age
-                </th>
-                <th className="text-left p-4 font-medium text-sm border-b border-[#D0D0D0]">
-                  Product
-                </th>
-                <th className="text-left py-2 font-medium text-sm border-b border-[#D0D0D0]">
-                  Call Type
-                </th>
-                <th className="text-left p-4 font-medium text-sm border-b border-[#D0D0D0]">
-                  Sentiments
-                </th>
-                <th className="text-left p-4 font-medium text-sm border-b border-[#D0D0D0]">
-                  Intent
-                </th>
-              </tr>
-            </thead>
-            {isPending && (
-              <tr
-                style={{
-                  height: "400px",
-                  textAlignVertical: "center",
-                  textAlign: "center",
-                }}
-              >
-                <td colSpan="8">
-                  <ClipLoader color="#2056FF" size="50px" />
-                </td>
-              </tr>
-            )}
-            <tbody>
-              {callData?.map((call, i) => (
-                <tr
-                  key={i}
-                  className="hover:bg-gray-50 border-b border-[#D0D0D0]"
-                >
-                  <td className="p-4 text-sm">{call?._date}</td>
-                  <td className="p-4 text-sm">{call?._customer}</td>
-                  <td className="p-4 text-sm">{call?._agent}</td>
-                  <td className="p-4 text-sm">
-                    {call._id.slice(0, 5).toUpperCase()}
-                  </td>
-                  <td className="p-4 text-sm">
-                    {call._language.includes("English")
-                      ? "English"
-                      : call._language}
-                  </td>
-                  <td className="py-4 px-2 text-sm">
-                    {call?._product_name
-                      .toLowerCase()
-                      .split(" ")
-                      .map(
-                        (word) => word.charAt(0).toUpperCase() + word.slice(1)
-                      )
-                      .join(" ")}
-                  </td>
-                  <td className="py-2 text-sm">{call?._call_type}</td>
-                  {call._intent !== 0 ? (
-                    <>
-                      <td className="p-4 text-sm">
-                        {call._sentiment > 0 ? (
-                          <img src={plusgreen} alt="plus icon" />
-                        ) : (
-                          <img src={negative} alt="minus icon" />
-                        )}
-                      </td>
-                      <td className="p-4 text-sm">
-                        {call._intent > 0 ? (
-                          <img src={plusgreen} alt="plus icon" />
-                        ) : (
-                          <img src={negative} alt="minus icon" />
-                        )}
-                      </td>
-                    </>
-                  ) : (
-                    localStorage.getItem("collection_module") === "true" && (
-                      <td
-                        colSpan="4"
-                        data-toggle="tooltip"
-                        data-placement="left"
-                        title={call._processing_status}
-                      >
-                        {call._processing_status !== "Failed" ? (
-                          <div className="flex items-center">
-                            <div className="flex-grow">
-                              <Progressbar
-                                bgcolor="#271078"
-                                progress={call._progress}
-                                height={20}
-                              />
-                            </div>
-                            <div className="m-2">
-                              <PulseLoader color="#2056FF" size="8px" />
-                            </div>
-                          </div>
-                        ) : (
-                          <div>
-                            <img src={close} />
-                            Call Processing Failed, Need Action
-                            <a
-                              // onClick={() => removeFailedItem(call._id)}
-                              className="pull-right"
-                              style={{ color: "red" }}
-                            >
-                              <img src={close} alt="close" /> Remove
-                            </a>
-                          </div>
-                        )}
-                      </td>
-                    )
-                  )}
+          {isPending ? (
+            <Tableskeleton thead={9} trow={10} tcol={9} />
+          ) : (
+            <table className="w-full mt-4 rounded-[12px] overflow-hidden border-collapse">
+              <thead className="bg-[#717171]">
+                <tr className="text-[#fff]">
+                  <th className="text-left p-4 font-medium text-sm border-b border-[#D0D0D0]">
+                    Call Date
+                  </th>
+                  <th className="text-left p-4 font-medium text-sm border-b border-[#D0D0D0]">
+                    Customer
+                  </th>
+                  <th className="text-left p-4 font-medium text-sm border-b border-[#D0D0D0]">
+                    Agent
+                  </th>
+                  <th className="text-left p-4 font-medium text-sm border-b border-[#D0D0D0]">
+                    Call ID
+                  </th>
+                  <th className="text-left p-4 font-medium text-sm border-b border-[#D0D0D0]">
+                    Age
+                  </th>
+                  <th className="text-left p-4 font-medium text-sm border-b border-[#D0D0D0]">
+                    Product
+                  </th>
+                  <th className="text-left py-2 font-medium text-sm border-b border-[#D0D0D0]">
+                    Call Type
+                  </th>
+                  <th className="text-left p-4 font-medium text-sm border-b border-[#D0D0D0]">
+                    Sentiments
+                  </th>
+                  <th className="text-left p-4 font-medium text-sm border-b border-[#D0D0D0]">
+                    Intent
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
 
+              {/* {console.log(callData)} */}
+              <tbody>
+                {callData?.map((call, i) => (
+                  <tr
+                    key={i}
+                    className="hover:bg-gray-50 border-b border-[#D0D0D0] cursor-pointer"
+                    onClick={() => openCallInsight(call?._id, call?._intent)}
+                  >
+                    <td className="p-4 text-sm">{call?._date}</td>
+                    <td className="p-4 text-sm">{call?._customer}</td>
+                    <td className="p-4 text-sm">{call?._agent}</td>
+                    <td className="p-4 text-sm">
+                      {call._id.slice(0, 5).toUpperCase()}
+                    </td>
+                    <td className="p-4 text-sm">
+                      {call._language.includes("English")
+                        ? "English"
+                        : call._language}
+                    </td>
+                    <td className="py-4 px-2 text-sm">
+                      {call?._product_name
+                        .toLowerCase()
+                        .split(" ")
+                        .map(
+                          (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                        )
+                        .join(" ")}
+                    </td>
+                    <td className="py-2 text-sm">{call?._call_type}</td>
+                    {call._intent !== 0 ? (
+                      <>
+                        <td className="p-4 text-sm">
+                          {call._sentiment > 0 ? (
+                            <img src={plusgreen} alt="plus icon" />
+                          ) : (
+                            <img src={negative} alt="minus icon" />
+                          )}
+                        </td>
+                        <td className="p-4 text-sm">
+                          {call._intent > 0 ? (
+                            <img src={plusgreen} alt="plus icon" />
+                          ) : (
+                            <img src={negative} alt="minus icon" />
+                          )}
+                        </td>
+                      </>
+                    ) : (
+                      localStorage.getItem("collection_module") === "true" && (
+                        <td
+                          colSpan="4"
+                          data-toggle="tooltip"
+                          data-placement="left"
+                          title={call._processing_status}
+                        >
+                          {call._processing_status !== "Failed" ? (
+                            <div className="flex items-center">
+                              <div className="flex-grow">
+                                <Progressbar
+                                  bgcolor="#271078"
+                                  progress={call._progress}
+                                  height={20}
+                                />
+                              </div>
+                              <div className="m-2">
+                                <PulseLoader color="#2056FF" size="8px" />
+                              </div>
+                            </div>
+                          ) : (
+                            <div>
+                              <img src={close} />
+                              Call Processing Failed, Need Action
+                              <a
+                                // onClick={() => removeFailedItem(call._id)}
+                                className="pull-right"
+                                style={{ color: "red" }}
+                              >
+                                <img src={close} alt="close" /> Remove
+                              </a>
+                            </div>
+                          )}
+                        </td>
+                      )
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
           <Pagination
             currentPage={currentPage}
             totalPages={totalpage.length}
@@ -1227,7 +1237,7 @@ function CallList() {
                   name={"Upload"}
                   classname={`border border-[#171717] hover:border-none text-[16px] flex justify-center items-center p-[10px] ${
                     !isPending ? "hover:bg-[#11AE00]" : ""
-                  } hover:text-white transition duration-300 ease-out hover:ease-in-out w-[150px] h-[44px] rounded-lg bg-[#271078] text-white`}
+                  }  hover:text-white transition duration-300 ease-out hover:ease-in-out w-[150px] h-[44px] rounded-lg bg-[#271078] text-white`}
                   onclick={
                     !bulkupload ? uploadCallRecording : uploadBulkCallRecording
                   }
@@ -1263,7 +1273,7 @@ function CallList() {
                     style={{ height: "80px" }}
                   >
                     {addBulkCall.length ? (
-                      <div className=" flex">
+                      <div className="flex">
                         <ul className="!list-disc ml-8">
                           {addBulkCall?.map((e, i) => (
                             <li

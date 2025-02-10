@@ -19,7 +19,7 @@ const Login = () => {
       navigate("/");
     }
   }, [navigate]);
-  console.log(error);
+  // console.log(error);
   const handleSubmit = (e) => {
     e.preventDefault();
     var login_info = { username, password };

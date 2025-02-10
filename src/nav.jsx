@@ -50,7 +50,7 @@ function Nav() {
 
   return (
     <nav
-      className="h-[55px] px-4 bg-white mt-4 flex items-center justify-between"
+      className="h-[55px] px-4 bg-white mt-2 flex items-center justify-between"
       //   role="navigation"
     >
       <div
@@ -79,19 +79,25 @@ function Nav() {
           Home
         </li>
         {loading ? (
-          <li className="text-[#171717] px-3 py-2">
-            <ClipLoader color="#271078" size={24} />
-          </li>
+          [...Array(9)].map((_, i) => (
+            <li
+              key={i}
+              className="px-3 py-2 rounded-lg mr-1 text-[14px] flex items-center animate-pulse"
+            >
+              <div className="h-6 w-20 bg-gray-300 rounded shimmer"></div>
+            </li>
+          ))
         ) : (
           <>
             {permission &&
-              permission?.map((p) => (
+              permission?.map((p, i) => (
                 <>
                   {p.feature == "Call List" && (
                     <li
                       key={p.feature}
                       className={`${
-                        url.includes("/call-list")
+                        url.includes("/call-list") ||
+                        url.includes("/call-insight")
                           ? "bg-[#271078] text-white"
                           : "text-[#171717] hover:bg-[#B0A9C8] transition duration-300 ease-out hover:ease-in-out "
                       } px-3 py-2 cursor-pointer rounded-lg mr-1 text-[14px] flex 
@@ -105,7 +111,10 @@ function Nav() {
                         alt="call-icon"
                         className={`
                       ${
-                        url.includes("/call-list") ? "fill-whitee" : ""
+                        url.includes("/call-list") ||
+                        url.includes("/call-insight")
+                          ? "fill-whitee"
+                          : ""
                       }  h-[16px] mr-1
                     `}
                       />

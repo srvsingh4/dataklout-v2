@@ -29,6 +29,19 @@
   background: #555;
 }
 
+.task::-webkit-scrollbar {
+  width: 2px;
+}
+
+/* .custom-scrollbar::-webkit-scrollbar {
+  width: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+} */
+
 .image {
   background-image: url("assets/images/login-hero-Image.png");
   background-size: cover;
@@ -63,7 +76,7 @@
   background-color: #271078;
   color: white;
 }
-tbody tr:nth-child(odd) {
+.table-with-bg tbody tr:nth-child(even) {
   background: #f6f6f6;
 }
 
@@ -94,4 +107,27 @@ tbody tr:nth-child(odd) {
 .role {
   overflow-y: auto;
   overflow-x: hidden;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+  scrollbar-color: transparent;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+.shimmer {
+  background: linear-gradient(to right, #f0f0f0 4%, #e0e0e0 25%, #f0f0f0 36%);
+  background-size: 1000px 100%;
+  animation: shimmer 1.5s infinite linear;
 }
