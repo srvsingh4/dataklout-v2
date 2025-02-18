@@ -1,17 +1,18 @@
 import PropTypes from "prop-types";
 
-function Tableskeleton({ thead, trow, tcol }) {
+function Tableskeleton({ thead, trow, tcol, clr }) {
   Tableskeleton.propTypes = {
     thead: PropTypes.number.isRequired,
     trow: PropTypes.number.isRequired,
     tcol: PropTypes.number.isRequired,
+    clr: PropTypes.string.isRequired,
   };
 
   // keep thead and tcol same number while sening the props
   return (
     <div className="w-full mt-4 overflow-hidden rounded-[12px] shadow animate-pulse">
       <table className="w-full border-collapse">
-        <thead className="bg-[#E0DCED]">
+        <thead className={clr ? `bg-[${clr}]` : "bg-[#E0DCED]"}>
           <tr>
             {[...Array(thead)].map((_, i) => (
               <th key={i} className="px-4 py-2 text-left">

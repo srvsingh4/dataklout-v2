@@ -336,14 +336,14 @@ function Home() {
               </h1>
             </div>
             <div
-              className={`h-[317px] mt-4 ${
+              className={`h-[288px] mt-4 ${
                 fullScript.length === 1 ? "no-scrollbar" : "overflow-y-scroll"
               }`}
             >
               {fullScript.length && !fullScriptPending ? (
                 fullScript.map((e, i) => (
                   <div
-                    className="mb-4 shadow-md min-h-[315px] rounded-xl"
+                    className="mb-4 shadow-md min-h-[289px] rounded-xl"
                     key={i}
                   >
                     <div className="bg-[#E0DCED] h-[47px] rounded-t-lg flex items-center">

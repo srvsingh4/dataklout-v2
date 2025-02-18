@@ -486,12 +486,6 @@ function CallList() {
             </span>
 
             <span className="flex">
-              {/* <button
-                className=" px-4  border border-[#171717] py-[6px]  rounded-lg mr-2 flex items-center justify-center"
-                onClick={() => setAddcall(true)}
-              >
-                <img src={plus} alt="plus-icon" className=" mr-2" /> New
-              </button> */}
               <Button
                 name={"Upload Call"}
                 classname={
