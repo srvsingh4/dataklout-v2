@@ -43,7 +43,7 @@
 } */
 
 .image {
-  background-image: url("assets/images/login-hero-Image.png");
+  background-image: url("assets/images/login-hero-Image.webp");
   background-size: cover;
   background-attachment: fixed;
   background-position: center;

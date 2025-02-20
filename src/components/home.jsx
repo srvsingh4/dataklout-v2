@@ -278,7 +278,11 @@ function Home() {
                   </thead>
                   <tbody>
                     {recentcalldata?.map((e, i) => (
-                      <tr key={i} className="text-nowrap">
+                      <tr
+                        key={i}
+                        className="text-nowrap cursor-pointer"
+                        onClick={() => navigate(`/call/${e?._id}/call-insight`)}
+                      >
                         <td className="py-3 px-2 border-t">{e._date}</td>
                         <td className="py-3 border-t">
                           {e._customer_first_name}

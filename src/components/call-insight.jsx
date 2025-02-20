@@ -22,6 +22,9 @@ import summary from "../assets/Icons/call-summary.svg";
 import clock from "../assets/Icons/clock-black.svg";
 import playIcon from "../assets/Icons/play.svg";
 import loadingImg from "../assets/images/loading.png";
+import topKeyword from "../assets/Icons/top-keywords.svg";
+import archive from "../assets/Icons/archived.svg";
+import plus from "../assets/Icons/plus2.svg";
 import { WaveSurfer, WaveForm, Region } from "wavesurfer-react";
 import RegionsPlugin from "wavesurfer.js/dist/plugins/regions.js";
 import TimelinePlugin from "wavesurfer.js/dist/plugins/timeline.js";
@@ -44,6 +47,8 @@ function Callinsight() {
   var english = true;
   var ci = null;
   const [activeKey, setActiveKey] = useState("Product");
+  const [openpara, setOpenpara] = useState(false);
+
   /**
    * Fetch Call Insight data
    */
@@ -848,20 +853,24 @@ function Callinsight() {
 
   const [category, setCategory] = useState("");
 
-  async function callCategory() {
-    let url = `/api/call/${callID}/pcvc_insight/`;
+  // async function callCategory() {
+  //   let url = `/api/call/${callID}/pcvc_insight/`;
 
-    const res = await services
-      .get(url)
+  //   const res = await services
+  //     .get(url)
 
-      .then((res) => {
-        setCategory(res);
-      });
-  }
+  //     .then((res) => {
+  //       setCategory(res);
+  //     });
+  // }
 
-  useEffect(() => {
-    callCategory();
-  }, []);
+  // useEffect(() => {
+  //   callCategory();
+  // }, []);
+
+  const capitalizeTwoWords = (str) => {
+    return str.replace(/\b\w/g, (char) => char.toUpperCase());
+  };
 
   return (
     <div>
@@ -888,6 +897,26 @@ function Callinsight() {
                 </span>
               </span>
             </span>
+            <div className=" flex">
+              <Button
+                classname={
+                  "border border-[#C3C3C3] hover:border-none text-[16px] flex justify-center items-center p-[10px] hover:bg-[#271078] hover:text-white transition duration-300 ease-out hover:ease-in-out w-auto h-[44px] rounded-lg mr-4 "
+                }
+                name={"Archive call"}
+                onclick={() => {}}
+                imgSrc={archive}
+                isPending={""}
+              />
+              <Button
+                classname={
+                  "border border-[#C3C3C3] hover:border-none text-[16px] flex justify-center items-center p-[10px] hover:bg-[#271078] hover:text-white transition duration-300 ease-out hover:ease-in-out w-auto h-[44px] rounded-lg mr-4 "
+                }
+                name={"New Opportunity"}
+                onclick={() => {}}
+                imgSrc={plus}
+                isPending={""}
+              />
+            </div>
           </div>
         </div>
         <ResponsiveMasonry
@@ -906,7 +935,7 @@ function Callinsight() {
                 <Button
                   name={" Deep Analysis"}
                   classname={
-                    "border border-[#171717] hover:border-none text-[16px] flex justify-center items-center p-[10px] hover:bg-[#aaa9a8] hover:text-black transition duration-300 ease-out hover:ease-in-out w-auto h-[44px] rounded-lg mr-4 "
+                    "border border-[#171717] hover:border-none text-[16px] flex justify-center items-center p-[10px] hover:bg-[#271078] hover:text-white transition duration-300 ease-out hover:ease-in-out w-auto h-[44px] rounded-lg mr-4"
                   }
                   // onclick={() => setAddcall(true)}
                   imgSrc={wave}
@@ -931,7 +960,7 @@ function Callinsight() {
                     <Loading blockNo={1} />
                   ) : (
                     <div className=" text-2xl font-semibold leading-9 mt-6 ml-2 text-[#3B3B3B] flex items-center">
-                      <div className="h-[30px] w-[4px] bg-red-900 mr-1"></div>
+                      {/* <div className="h-[30px] w-[4px] bg-red-900 mr-1"></div> */}
                       {callInsight?.cx_score}%
                     </div>
                   )}
@@ -956,7 +985,7 @@ function Callinsight() {
                     <Loading blockNo={1} />
                   ) : (
                     <div className=" text-2xl font-semibold leading-9 mt-6 ml-2 text-[#3B3B3B] flex items-center">
-                      <div className="h-[30px] w-[4px] bg-red-900 mr-1"></div>
+                      {/* <div className="h-[30px] w-[4px] bg-red-900 mr-1"></div> */}
                       {callInsight?.problen === "true" ? "Yes" : "No"}
                     </div>
                   )}
@@ -979,7 +1008,7 @@ function Callinsight() {
                     <Loading blockNo={1} />
                   ) : (
                     <div className=" text-2xl font-semibold leading-9 mt-6 ml-2 text-[#3B3B3B] flex items-center">
-                      <div className="h-[30px] w-[4px] bg-red-900 mr-1"></div>
+                      {/* <div className="h-[30px] w-[4px] bg-red-900 mr-1"></div> */}
                       {callInsight?.intent > 0 ? "Positive" : "Negative"}
                     </div>
                   )}
@@ -1002,7 +1031,7 @@ function Callinsight() {
                   {isPending ? (
                     <Loading blockNo={1} />
                   ) : (
-                    <div className=" text-2xl font-semibold leading-9 mt-8 ml-2 text-[#3B3B3B] flex items-center border-l-4 border border-red-300 rounded-lg px-4">
+                    <div className=" text-2xl font-semibold leading-9 mt-8 ml-2 text-[#3B3B3B] flex items-center  px-4">
                       {/* <div className="h-[30px] w-[4px] bg-red-900 mr-1"></div> */}
                       {callInsight?.resolution ? "Yes" : "No"}
                     </div>
@@ -1012,16 +1041,24 @@ function Callinsight() {
             </div>
             <div className=" bg-white w-full rounded-[12px] px-4 py-2 flex justify-between text-[18px] leading-7">
               <div className=" flex justify-center">
-                <img src={agent} alt="agent" className=" mr-2" /> Agent
-                Sentiment :{" "}
-                <img src={plusgreen} alt="plus green" className="mx-2" />
-                89%
+                Agent Sentiment :{" "}
+                {callInsight?.agent_sentiment > 0 ? (
+                  <img src={plusgreen} alt="plus-icon" className="ml-1 mr-1" />
+                ) : (
+                  <img src={minusred} alt="minus-icon" className="ml-1 mr-1" />
+                )}
+                &nbsp;
+                {Math.abs((callInsight?.agent_sentiment * 100).toFixed(2))} %
               </div>
               <div className=" flex justify-center">
-                <img src={customerI} alt="cientent" className=" mr-2" />{" "}
                 Customer Sentiment :
-                <img src={plusgreen} alt="plus green" className="mx-2" />
-                89%
+                {callInsight?.customer_sentiment > 0 ? (
+                  <img src={plusgreen} alt="plus-icon" className="ml-1 mr-1" />
+                ) : (
+                  <img src={minusred} alt="minus-icon" className="ml-1 mr-1" />
+                )}
+                &nbsp;
+                {Math.abs((callInsight?.customer_sentiment * 100).toFixed(2))} %
               </div>
             </div>
             <div className=" bg-white w-full rounded-[12px] px-4 py-2">
@@ -1083,7 +1120,7 @@ function Callinsight() {
                     <div className="leading-7 mx-2  flex items-center text-[18px]">
                       <img src={voice} alt="" className=" mr-2 h-5 w-6" /> Voice
                     </div>
-                    <table className="w-full mt-4 overflow-hidden border-collapse rounded-[12px] text-nowrap table-with-bg border border-red-500">
+                    <table className="w-full mt-4 overflow-hidden border-collapse rounded-[12px] text-nowrap table-with-bg border border-red-500 shadow-md">
                       <thead className="bg-[#717171] ">
                         <tr className="text-[#252525]">
                           <th className="px-4 py-2 text-left text-[18px] font-medium leading-[27px] w-1/3 text-white">
@@ -1134,6 +1171,28 @@ function Callinsight() {
                             {callInsight?.entropy[1].entropy}
                           </td>
                         </tr>
+
+                        {openpara && (
+                          <tr className="text-nowrap">
+                            <td className="py-3 px-4 border-t text-[18px]">
+                              Entropy
+                            </td>
+
+                            <td className="py-3 border-t">111111</td>
+                            <td className="py-3 border-t">222222222</td>
+                          </tr>
+                        )}
+                        {openpara && (
+                          <tr className="text-nowrap">
+                            <td className="py-3 px-4 border-t text-[18px]">
+                              jjajsjj
+                            </td>
+
+                            <td className="py-3 border-t">111111</td>
+                            <td className="py-3 border-t">222222222</td>
+                          </tr>
+                        )}
+
                         <tr className="text-nowrap">
                           <td className="py-3 px-4 border-t text-[18px]">
                             Zero Cross Rate
@@ -1189,29 +1248,96 @@ function Callinsight() {
                     <div className="leading-7 mx-2  flex items-center text-[18px]">
                       <img src={text} alt="" className=" mr-2 h-5 w-6" /> Text
                     </div>
-                    <table className="w-full mt-4 overflow-hidden border-collapse rounded-[12px] text-nowrap table-with-bg">
+                    <table className="w-full mt-4 overflow-hidden border-collapse rounded-[12px] text-nowrap table-with-bg shadow-md">
                       <tbody className=" text-[18px]">
                         <thead></thead>
                         <tr className="text-nowrap">
-                          <td className="py-3 px-4 border-t">Pitch Variance</td>
+                          <td className="py-3 px-4 border-t">Sentiment</td>
 
-                          <td className="py-3 border-t">222222</td>
-                          <td className="py-3 border-t">333333</td>
+                          <td className="py-3 border-t">
+                            {(callInsight?.agent_sentiment * 100).toFixed(2)}%
+                          </td>
+                          <td className="py-3 border-t">
+                            {(callInsight?.agent_sentiment * 100).toFixed(2)}%
+                          </td>
                         </tr>
                         <tr className="text-nowrap">
-                          <td className="py-3 px-4 border-t">Loudness</td>
-
-                          <td className="py-3 border-t">222222</td>
-                          <td className="py-3 border-t">333333</td>
+                          <td className="py-3 px-4 border-t">
+                            Sentiment Keyword
+                          </td>
+                          <td
+                            className="py-3 border-t flex justify-center"
+                            colSpan={2}
+                          >
+                            {callInsight?.sentiment_keywords.length > 0
+                              ? callInsight.sentiment_keywords.map((e) => e)
+                              : "-"}
+                          </td>
                         </tr>
                       </tbody>
                     </table>
+                    <div
+                      onClick={() => setOpenpara(!openpara)}
+                      className="cursor-pointer flex justify-center mt-2 relative"
+                    >
+                      <div className="relative group">
+                        {openpara ? (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="26"
+                            height="26"
+                            fill="gray"
+                            className="bi bi-caret-up-fill"
+                            viewBox="0 0 16 16"
+                          >
+                            <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" />
+                          </svg>
+                        ) : (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="26"
+                            height="26"
+                            fill="gray"
+                            className="bi bi-caret-down-fill"
+                            viewBox="0 0 16 16"
+                          >
+                            <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+                          </svg>
+                        )}
+                        <div className="px-4 rounded-md border shadow-lg absolute mt-1 opacity-0 group-hover:opacity-100 text-nowrap transition-opacity left-4 top-[-27px] bg-gray-100">
+                          {openpara ? "View Less" : " View More"}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </>
               )}
             </div>
             <div className=" bg-white w-full rounded-[12px] px-4 py-2">
               hyhy
+            </div>
+
+            <div className=" bg-white w-full rounded-[12px] px-4 py-2 text-[18px] leading-7">
+              <div className=" flex items-center mb-4">
+                <img src={topKeyword} alt="agent" className=" mr-2 w-6 h-6" />
+                <span className=" text-[18px] leading-7">Top Keyword</span>
+              </div>
+              {callInsight?.keywords.map((e, i) => (
+                <div
+                  key={i}
+                  className="bg-[#EBEBEB] px-5 py-2 rounded-xl inline-block mb-2 ml-2"
+                >
+                  {capitalizeTwoWords(e)}
+                </div>
+              ))}
+            </div>
+
+            {/* <div className="bg-white w-full rounded-[12px] px-4 py-2">
+              
+              
+            </div> */}
+            <div className=" bg-white w-full rounded-[12px] px-4 py-2">
+              hhhh
             </div>
             <div className=" bg-white w-full rounded-[12px] px-4 py-2 text-[18px] leading-7">
               <div className=" flex items-center">

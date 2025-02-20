@@ -489,7 +489,7 @@ function CallList() {
               <Button
                 name={"Upload Call"}
                 classname={
-                  "border border-[#171717] hover:border-none text-[16px] flex justify-center items-center p-[10px] hover:bg-[#aaa9a8] hover:text-black transition duration-300 ease-out hover:ease-in-out w-auto h-[44px] rounded-lg mr-4 "
+                  "border border-[#171717] hover:border-none text-[16px] flex justify-center items-center p-[10px] hover:bg-[#271078] hover:text-white transition duration-300 ease-out hover:ease-in-out w-auto h-[44px] rounded-lg mr-4 "
                 }
                 onclick={() => setAddcall(true)}
                 imgSrc={plus}

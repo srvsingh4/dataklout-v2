@@ -5,8 +5,8 @@ const Button = ({ classname, name, onclick, imgSrc, isPending }) => {
   return (
     <button
       className={`${classname} button-with-icon ${
-        isPending ? " cursor-none opacity-25 hover:bg-none" : ""
-      } hover:fill-whitee `}
+        isPending ? "cursor-none opacity-25 hover:bg-none" : ""
+      } group cursor-pointer`}
       onClick={onclick}
     >
       {isPending ? (
@@ -16,7 +16,7 @@ const Button = ({ classname, name, onclick, imgSrc, isPending }) => {
           <img
             src={imgSrc}
             alt={`${name} icon`}
-            className="inline-block mr-2 w-4 h-6 "
+            className="inline-block mr-2 w-4 h-6 group-hover:invert group-hover:brightness-0"
           />
         )
       )}
