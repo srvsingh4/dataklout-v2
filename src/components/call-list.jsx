@@ -263,7 +263,7 @@ function CallList() {
       // console.log("hyhy", "from function");
       setUploadPending(false);
       setUploadError(null);
-      console.log(response.data.message);
+      // console.log(response.data.message);
       setUploadData({
         call_type: "",
         product: "",
@@ -286,11 +286,11 @@ function CallList() {
       );
       // setCallUploadSucess(true);
       setCurrentPage(1);
-      console.log("last of the then block");
+      // console.log("last of the then block");
 
-      console.log("Responseeeeeeee:", response.data);
+      // console.log("Responseeeeeeee:", response.data);
     } catch (error) {
-      console.log("coming here");
+      // console.log("coming here");
       toast.error("Upload failed", error);
       setUploadPending(false);
       setUploadError(error.message);
@@ -370,7 +370,7 @@ function CallList() {
   // console.log("bulkkkkkkkkkk", bulkcalldata);
 
   // console.log("supporting error --------------------", bulkerror);
-  console.log("call dataaaaaaa", addBulkCall);
+  // console.log("call dataaaaaaa", addBulkCall);
 
   const uploadBulkCallRecording = async function () {
     if (addBulkCall.length >= 1) {

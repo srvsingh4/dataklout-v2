@@ -1,18 +1,20 @@
 import { useState, useEffect } from "react";
 
-const CheckLoginStatus = () => {
-  const [loginStatus, setLogin] = useState(false);
+function CheckLoginStatus() {
+  const [loginStatus, setLoginStatus] = useState(
+    !!localStorage.getItem("access_token")
+  );
 
-  /**
-   * Check login Status
-   */
   useEffect(() => {
-    if (localStorage.getItem("access_token")) {
-      setLogin(true);
+    const token = localStorage.getItem("access_token");
+    if (token) {
+      setLoginStatus(true);
+    } else {
+      setLoginStatus(false);
     }
   }, []);
-  // console.log(loginStatus);
+
   return { loginStatus };
-};
+}
 
 export default CheckLoginStatus;

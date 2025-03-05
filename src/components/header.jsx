@@ -38,7 +38,7 @@ function Header() {
         refresh_token: localStorage.getItem("refresh_token"),
       })
       .then((res) => {
-        console.log(res);
+        // console.log(res);
         localStorage.clear();
         navigate("/login");
         window.location.reload();
@@ -129,23 +129,23 @@ function Header() {
               }}
               alt="profile pic"
               className={`rounded-full ${
-                profiledrop ? "border border-red-500" : ""
-              } ${url === "/account" ? "fill-red" : ""}`}
+                profiledrop || url === "/account" ? "border border-red-800" : ""
+              }`}
             />
             {profiledrop && (
               <div
                 ref={profileRef}
-                className=" border h-[90px] w-[160px] rounded-sm  z-10 absolute top-14 right-2  bg-white shadow-lg p-4"
+                className=" border h-[100px] w-[140px] z-10 absolute top-14 right-2  bg-white shadow-lg p-4 rounded-md"
               >
                 <ul className="">
                   <li>
                     {/* <Link to="/account"> */}
                     <span
-                      className=" flex items-center mb-2"
+                      className=" flex items-center mb-2 hover:bg-gray-200 px-4 rounded-md py-1"
                       onClick={() => navigate("/account")}
                     >
                       <img src={profile} alt="profile-icon" />
-                      <a className=" ml-4" style={{ fontSize: "16px" }}>
+                      <a className="ml-2" style={{ fontSize: "16px" }}>
                         {localStorage.getItem("first_name")}&nbsp;
                         {localStorage.getItem("last_name")}
                       </a>
@@ -154,11 +154,11 @@ function Header() {
                   </li>
                   <li className=" ">
                     <span
-                      className=" flex flex-row items-center cursor-pointer "
+                      className=" flex flex-row items-center cursor-pointer hover:bg-gray-200 px-4 rounded-md py-1"
                       onClick={logout}
                     >
                       <img src={logoutIcon} alt="logout-icon" />
-                      <a className=" ml-4" style={{ fontSize: "16px" }}>
+                      <a className="ml-2" style={{ fontSize: "16px" }}>
                         Logout
                       </a>
                     </span>

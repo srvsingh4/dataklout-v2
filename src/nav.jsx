@@ -33,7 +33,7 @@ function Nav() {
         setLoading(false);
       })
       .then((res) => {
-        if (res.code === "token not valid") {
+        if (res?.code === "token not valid") {
           localStorage.clear();
           window.location.href = "/login";
         }

@@ -131,3 +131,64 @@
   background-size: 1000px 100%;
   animation: shimmer 1.5s infinite linear;
 }
+.toggle-switch {
+  float: right;
+}
+
+.toggle-switch > label {
+  font-weight: 500;
+  font-size: 18px;
+  letter-spacing: 0.095em;
+  color: #252525;
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 0 0;
+  margin-right: 13px;
+}
+
+.toggle-switch-intregrate {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.toggle-switch-intregrate input[type="checkbox"] {
+  display: none;
+}
+
+.toggle-switch-intregrate label {
+  cursor: pointer;
+  text-indent: -9999px;
+  width: 50px !important;
+  height: 30px;
+  background: #270086;
+  display: block;
+  border-radius: 15px;
+  position: relative;
+  margin: 0;
+  transition: all 0.4s ease-in-out;
+}
+
+.toggle-switch-intregrate label:after {
+  content: "";
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: 19px;
+  height: 19px;
+  background: #ffffff;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+.toggle-switch-intregrate input:checked + label {
+  background: #270086;
+}
+
+.toggle-switch-intregrate input:checked + label:after {
+  left: calc(100% - 5px);
+  transform: translateX(-100%);
+}
+
+.toggle-switch-intregrate label:active:after {
+  width: 30px;
+}

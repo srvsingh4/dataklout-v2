@@ -1,8 +1,9 @@
 import Header from "./header";
 import Nav from "../nav";
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import Service from "./webservice/http";
+import { useNavigate } from "react-router-dom";
 import callInsightIcon from "../assets/Icons/call-insight.svg";
 import call from "../assets/Icons/call-callInsight.svg";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
@@ -21,68 +22,46 @@ import text from "../assets/Icons/text.svg";
 import summary from "../assets/Icons/call-summary.svg";
 import clock from "../assets/Icons/clock-black.svg";
 import playIcon from "../assets/Icons/play.svg";
-import loadingImg from "../assets/images/loading.png";
+import loadingImg from "../assets/images/loading.svg";
 import topKeyword from "../assets/Icons/top-keywords.svg";
+import transcription from "../assets/Icons/trans.svg";
+import money from "../assets/Icons/money.svg";
+import agentIc from "../assets/Icons/agentI.svg";
+import personIc from "../assets/Icons/person.svg";
 import archive from "../assets/Icons/archived.svg";
+import calldatabase from "../assets/Icons/calllines.svg";
 import plus from "../assets/Icons/plus2.svg";
-import { WaveSurfer, WaveForm, Region } from "wavesurfer-react";
-import RegionsPlugin from "wavesurfer.js/dist/plugins/regions.js";
-import TimelinePlugin from "wavesurfer.js/dist/plugins/timeline.js";
+import WaveSurfer from "wavesurfer.js";
+import TimelinePlugin from "wavesurfer.js/dist/plugins/timeline.esm.js";
 import { useParams } from "react-router-dom";
 import Button from "./common/button";
 import Tableskeleton from "./common/tableSkeleton";
 import BlockSkeleton from "./common/blockSkeleton";
 import Loading from "./common/loading";
+import Highlighter from "react-highlight-words";
+import callIcon from "../assets/Icons/addcall.svg";
+import product from "../assets/Icons/product.svg";
+import keyword from "../assets/Icons/top-keywords.svg";
+import status from "../assets/Icons/status.svg";
 
 function Callinsight() {
-  const wavesurferRef = useRef();
   const services = new Service();
+  const navigate = useNavigate();
   const { callID } = useParams();
   const [callInsight, setCallInsight] = useState(null);
   const [error, setError] = useState("");
   const [isPending, setIsPending] = useState(false);
+  const [activeTranscript, setActiveTranscript] = useState(null);
+  const [opportunity, setopportunity] = useState(false);
 
   const [isLanguageEnglish, setIsLanguageEnglish] = useState(true);
   const [displayEnglish, setDisplayEnglish] = useState(true);
   var english = true;
-  var ci = null;
-  const [activeKey, setActiveKey] = useState("Product");
+  // var ci = null;
+  // const [activeKey, setActiveKey] = useState("Product");
   const [openpara, setOpenpara] = useState(false);
-
-  /**
-   * Fetch Call Insight data
-   */
-  // console.log(callInsight);
-  // yet to complete
-  const [showedit, setshowedit] = useState(true);
-
-  const usecase = localStorage.getItem("usecase");
-  // console.log(usecase);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    services
-      .patch(`api/call/${callID}/call_insight/`, updatedCallInsight)
-      .then((res) => {
-        // console.log("checkkkkkkk", res);
-        // window.location.reload();
-      });
-    // console.log("HFDYTJHFYJHF", updatedCallInsight);
-    setshowedit(true);
-  };
-
-  const handleInputChange = (event) => {
-    // console.log("handleInputChange called");
-    const { name, value } = event.target;
-    // console.log("name:", name);
-    // console.log("value:", value);
-
-    setupdatedCallInsight((prevFormData) => ({
-      ...prevFormData,
-      [name]: value,
-    }));
-  };
-  const [updatedCallInsight, setupdatedCallInsight] = useState({});
+  const [archivecall, setArchivecall] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   function fetchData() {
     setError("");
@@ -96,30 +75,30 @@ function Callinsight() {
       } else {
         if (res.code == "token_not_valid") {
           localStorage.clear();
-          history.push("/login");
+          navigate("/login");
         }
         setCallInsight(res);
-        setupdatedCallInsight({
-          name: res.name,
-          request_type: res.request_type,
-          product: res.product,
-          buy: res.buy,
-          sell: res.sell,
-
-          amount: res.amount,
-          company_name: res.company_name,
-
-          price: res.price,
-          shares: res.shares,
-
-          final_price: res.final_price,
-          units: res.units,
-          date: res.date,
-          folio_number: res.folio_number,
-
-          contract_number: res.contract_number,
-          quantity: res.quantity,
-        });
+        // setupdatedCallInsight({
+        //   name: res.name,
+        //   request_type: res.request_type,
+        //   product: res.product,
+        //   buy: res.buy,
+        //   sell: res.sell,
+        //
+        //   amount: res.amount,
+        //   company_name: res.company_name,
+        //
+        //   price: res.price,
+        //   shares: res.shares,
+        //
+        //   final_price: res.final_price,
+        //   units: res.units,
+        //   date: res.date,
+        //   folio_number: res.folio_number,
+        //
+        //   contract_number: res.contract_number,
+        //   quantity: res.quantity,
+        // });
         // console.log(res, "checking");
         if (res.language !== "English") {
           setIsLanguageEnglish(false);
@@ -127,640 +106,32 @@ function Callinsight() {
           english = false;
         }
 
-        ci = res;
+        // ci = res;
         setError("");
-        try {
-          wavesurferRef.current.load(res.audio_file);
-        } catch {}
+
+        // wavesurferRef.current.load(res?.audio_file);
       }
     });
   }
 
   useEffect(() => {
     fetchData();
-  }, [showedit]);
-  /**
-   * Fetch Call Insight data
-   */
-
-  // console.log(updatedCallInsight);
-
-  const [agentVariance, setAgentVariance] = useState(null);
-  const [customerVariance, setCustomerVariance] = useState(null);
-  const [agentLoudness, setAgentLoudness] = useState(null);
-  const [customerLoudness, setCustomerLoudness] = useState(null);
-  const [agentEntropy, setAgentEntropy] = useState(null);
-  const [customerEntropy, setCustomerEntropy] = useState(null);
-  const [agentEnergy, setAgentEnergy] = useState(null);
-  const [customerEnergy, setCustomerEnergy] = useState(null);
-
-  const [criticalFactor, setCriticalFactor] = useState(null);
-
-  function fetchCriticalFactorData() {
-    services.get(`api/call/${callID}/critical_factor/`).then((res) => {
-      // console.log(res);
-      setIsPending(false);
-      if (res == "TypeError: Failed to fetch") {
-        setError("Connection Error");
-      } else {
-        if (res.code == "token_not_valid") {
-          localStorage.clear();
-          history.push("/login");
-        }
-        setCriticalFactor(res);
-        setProblem(res.problem);
-        setResolution(res.resolution);
-      }
-    });
-  }
-
-  const [problem, setProblem] = useState("");
-  const [resolution, setResolution] = useState("");
-  function criticalValueSelectionChnage(type, id) {
-    var tempCriticalFactor = criticalFactor;
-    if (type === "product") {
-      var products = tempCriticalFactor.product;
-      for (let i = 0; i < products.length; i++) {
-        if (products[i].id === id) {
-          products[i].status = true;
-        } else {
-          products[i].status = false;
-        }
-      }
-      tempCriticalFactor.product = products;
-    }
-
-    if (type === "manufacturer") {
-      var manufacturer = tempCriticalFactor.manufacturer;
-      for (let i = 0; i < manufacturer.length; i++) {
-        if (manufacturer[i].id === id) {
-          manufacturer[i].status = true;
-        } else {
-          manufacturer[i].status = false;
-        }
-      }
-      tempCriticalFactor.manufacturer = manufacturer;
-    }
-
-    if (type === "part_no") {
-      var part_no = tempCriticalFactor.part_no;
-      for (let i = 0; i < part_no.length; i++) {
-        if (part_no[i].id === id) {
-          part_no[i].status = true;
-        } else {
-          part_no[i].status = false;
-        }
-      }
-      tempCriticalFactor.part_no = part_no;
-    }
-
-    if (type === "model_no_list") {
-      var model_no_list = tempCriticalFactor.model_no_list;
-      for (let i = 0; i < model_no_list.length; i++) {
-        if (model_no_list[i].id === id) {
-          model_no_list[i].status = true;
-        } else {
-          model_no_list[i].status = false;
-        }
-      }
-      tempCriticalFactor.model_no_list = model_no_list;
-    }
-
-    setCriticalFactor(tempCriticalFactor);
-    // console.log(criticalFactor);
-  }
-
-  const updateCriticalFactor = () => {
-    var selected_product = "";
-    var selected_manufacturer = "";
-    var selected_part_no = "";
-    var selected_model = "";
-
-    for (let i = 0; i < criticalFactor.product.length; i++) {
-      if (criticalFactor.product[i].status === true) {
-        selected_product = criticalFactor.product[i].id;
-      }
-    }
-    for (let i = 0; i < criticalFactor.manufacturer.length; i++) {
-      if (criticalFactor.manufacturer[i].status === true) {
-        selected_manufacturer = criticalFactor.manufacturer[i].id;
-      }
-    }
-    for (let i = 0; i < criticalFactor.part_no.length; i++) {
-      if (criticalFactor.part_no[i].status === true) {
-        selected_part_no = criticalFactor.part_no[i].id;
-      }
-    }
-    for (let i = 0; i < criticalFactor.model_no_list.length; i++) {
-      if (criticalFactor.model_no_list[i].status === true) {
-        selected_model = criticalFactor.model_no_list[i].id;
-      }
-    }
-    var data = {
-      problem: problem,
-      resolution: resolution,
-      product: selected_product,
-      manufacturer: selected_manufacturer,
-      partNo: selected_part_no,
-      modelNo: selected_model,
-    };
-
-    services.post(`api/call/${callID}/critical_factor/`, data).then((res) => {
-      // console.log(res);
-      if (res == "TypeError: Failed to fetch") {
-        setError("Connection Error");
-      } else {
-        if (res.code == "token_not_valid") {
-          localStorage.clear();
-          history.push("/login");
-        }
-        NotificationManager.success("Success", "Critical Factor updated");
-      }
-    });
-  };
-
-  // useEffect(() => {
-  //     console.log(criticalFactor);
-  // }, [criticalFactor]);
-
-  useEffect(() => {
-    fetchData();
-    //buildFilter();
-    if (localStorage.getItem("critical_factor_module") === "true") {
-      fetchCriticalFactorData();
-    }
-
-    // console.log(callInsight);
-    fetchSupportingInfo();
-  }, [history]);
-
-  /**
-   * After fetching call insight data, process that data to display in required format
-   */
-
-  useEffect(() => {
-    var i = 0;
-    for (i = 0; i < 2; i++) {
-      try {
-        if (callInsight.pitch_variance[i].Speaker === "agent") {
-          setAgentVariance(callInsight.pitch_variance[i].pitchvar);
-        }
-        if (callInsight.pitch_variance[i].Speaker === "customer") {
-          setCustomerVariance(callInsight.pitch_variance[i].pitchvar);
-        }
-        if (callInsight.loudness[i].speaker === "agent") {
-          setAgentLoudness(callInsight.loudness[i].loudness);
-        }
-        if (callInsight.loudness[i].speaker === "customer") {
-          setCustomerLoudness(callInsight.loudness[i].loudness);
-        }
-        if (callInsight.entropy[i].speaker === "agent") {
-          setAgentEntropy(callInsight.entropy[i].entropy);
-        }
-        if (callInsight.entropy[i].speaker === "customer") {
-          setCustomerEntropy(callInsight.entropy[i].entropy);
-        }
-        if (callInsight.energy[i].speaker === "agent") {
-          setAgentEnergy(callInsight.energy[i].energy);
-        }
-        if (callInsight.energy[i].speaker === "customer") {
-          setCustomerEnergy(callInsight.energy[i].energy);
-        }
-        if (callInsight.call_type === "Collection") {
-          fetchCollectionStatusData();
-        }
-      } catch {}
-    }
-  }, [callInsight]);
-
-  const [collectionStatusData, setCollectionStatusData] = useState(null);
-
-  /**
-   * Fetch current status of collection if it is a collection call
-   */
-  function fetchCollectionStatusData() {
-    services.get(`api/call/${callID}/collection_status/`).then((res) => {
-      // console.log(res);
-      if (res == "TypeError: Failed to fetch") {
-        setError("Connection Error");
-      } else {
-        setCollectionStatusData(res);
-        setCollectionStatus(res.updated_status);
-      }
-    });
-  }
-
-  const [showCollectionReviewDetails, setShowCollectionReviewDetails] =
-    useState(false);
-  useEffect(() => {
-    fetchCollectionStatusData();
-  }, [showCollectionReviewDetails]);
-  const customStyles = {
-    content: {
-      top: "50%",
-      left: "50%",
-      right: "auto",
-      bottom: "auto",
-      marginRight: "-50%",
-      transform: "translate(-50%, -50%)",
-    },
-  };
-
-  const [collectionStatus, setCollectionStatus] = useState("");
-  const [comment, setComment] = useState("");
-  const [accepted, setAccepted] = useState(false);
-
-  /**
-   * Update current status of collection
-   */
-  function updateCollectionStatusData() {
-    if (callInsight.agent_id === localStorage.getItem("username")) {
-      var data = {
-        type: "agent",
-        updated_status: collectionStatus,
-      };
-    }
-    if (callInsight.agent_id !== localStorage.getItem("username")) {
-      var data = {
-        type: "manager",
-        status_id: collectionStatusData.id,
-        accepted: accepted,
-        comment: comment,
-      };
-    }
-    services.post(`api/call/${callID}/collection_status/`, data).then((res) => {
-      // console.log(res);
-      if (res == "TypeError: Failed to fetch") {
-        setError("Connection Error");
-      } else {
-        if (res.code == "token_not_valid") {
-          localStorage.clear();
-          history.push("/login");
-        }
-        setShowCollectionReviewDetails(false);
-      }
-    });
-  }
-
-  // console.log(updatedCallInsight);
-  useEffect(() => {
-    buildFilter();
-  }, [callInsight]);
-
-  const [match, setMatch] = useState("");
-
-  async function callInsightMatch() {
-    let url = `/api/call/${callID}/pcvc_insight/`;
-    const res = await services.get(url).then((res) => {
-      setMatch(res);
-      // console.log(res,"ffff")
-    });
-  }
-  useEffect(() => {
-    callInsightMatch();
   }, []);
 
-  const [emotions, setEmotions] = useState(null);
-  const [speakers, setSpeakers] = useState(null);
+  const capitalizeTwoWords = (str) => {
+    return str.replace(/\b\w/g, (char) => char.toUpperCase());
+  };
 
-  /**
-   * filter speech region based on selected speaker and selected emotiom
-   * It is required to display filter range
-   * @param {*} filter_type Filter Type
-   * @param {*} filter Filter
-   */
-  function regionFilterFun(filter_type, filter) {
-    var regionData = [];
-    if (callInsight != null) {
-      var i = 1;
-      callInsight.speech.map((speechItem) => {
-        if (filter_type == "speaker") {
-          if (filter == "agent") {
-            if (speechItem.speaker == "agent") {
-              regionData.push({
-                id: "region-" + i.toString(),
-                start: speechItem.startTime,
-                end: speechItem.endTime,
-                color: "rgba(255, 196, 226, 0.4)",
-                data: {
-                  systemRegionId: i,
-                },
-              });
-            }
-          } else {
-            if (speechItem.speaker == "customer") {
-              regionData.push({
-                id: "region-" + i.toString(),
-                start: speechItem.startTime,
-                end: speechItem.endTime,
-                color: "rgba(255, 255, 0, 0.4)",
-                data: {
-                  systemRegionId: i,
-                },
-              });
-            }
-          }
-        } else {
-          if (filter == "Happy") {
-            if (speechItem.emotion == "Happy") {
-              regionData.push({
-                id: "region-" + i.toString(),
-                start: speechItem.startTime,
-                end: speechItem.endTime,
-                color: "rgba(0,228,255,0.2)",
-                data: {
-                  systemRegionId: i,
-                },
-              });
-            }
-          } else if (filter == "Fearful") {
-            if (speechItem.emotion == "Fearful") {
-              regionData.push({
-                id: "region-" + i.toString(),
-                start: speechItem.startTime,
-                end: speechItem.endTime,
-                color: "rgba(0,64,255,0.2)",
-                data: {
-                  systemRegionId: i,
-                },
-              });
-            }
-          } else if (filter == "Angry") {
-            if (speechItem.emotion == "Angry") {
-              regionData.push({
-                id: "region-" + i.toString(),
-                start: speechItem.startTime,
-                end: speechItem.endTime,
-                color: "rgba(58,255,0,0.2)",
-                data: {
-                  systemRegionId: i,
-                },
-              });
-            }
-          } else if (filter == "Sad") {
-            if (speechItem.emotion == "Sad") {
-              regionData.push({
-                id: "region-" + i.toString(),
-                start: speechItem.startTime,
-                end: speechItem.endTime,
-                color: "rgba(255,0,255,0.2)",
-                data: {
-                  systemRegionId: i,
-                },
-              });
-            }
-          } else {
-            if (speechItem.emotion == "Calm") {
-              regionData.push({
-                id: "region-" + i.toString(),
-                start: speechItem.startTime,
-                end: speechItem.endTime,
-                color: "rgba(255,0,0,0.2)",
-                data: {
-                  systemRegionId: i,
-                },
-              });
-            }
-          }
-        }
-        i++;
-      });
-
-      setRegions(regionData);
-    }
-  }
-
-  /**
-   * Build filter options
-   */
-  function buildFilter() {
-    var emotions = [];
-    var speakers = [];
-    if (callInsight != null) {
-      callInsight.speech.map((speechItem) => {
-        if (emotions.indexOf(speechItem.emotion) === -1) {
-          emotions.push(speechItem.emotion);
-        }
-        if (speakers.indexOf(speechItem.speaker) === -1) {
-          speakers.push(speechItem.speaker);
-        }
-      });
-    }
-    setEmotions(emotions);
-    setSpeakers(speakers);
-  }
-
-  /**
-   * Control audio play and pause status
-   */
-
-  const [regions, setRegions] = useState([]);
-  const [isPlaying, setIsPlaying] = useState(false);
-
-  const [timelineVis, setTimelineVis] = useState(true);
-  const regionsRef = useRef(regions);
-
-  const play = useCallback(() => {
-    if (wavesurferRef.current) {
-      wavesurferRef.current.playPause();
+  useEffect(() => {
+    if (archivecall) {
+      document.body.style.overflow = "hidden";
     } else {
-      console.error("WaveSurfer instance is not initialized.");
+      document.body.style.overflow = "auto";
     }
-  }, []);
+  }, [archivecall]);
 
-  const plugins = useMemo(() => {
-    return [
-      {
-        plugin: RegionsPlugin,
-        options: { dragSelection: true },
-      },
-      timelineVis && {
-        plugin: TimelinePlugin,
-        options: {
-          container: "#timeline",
-          color: "#000000",
-          fontSize: "25px",
-        },
-      },
-    ].filter(Boolean);
-  }, [timelineVis]);
-
-  /**
-   * Create region on audio web graph
-   */
-  const regionCreatedHandler = useCallback(
-    (region) => {
-      // console.log("region-created --> region:", region);
-
-      if (region.data.systemRegionId) return;
-
-      setRegions([
-        ...regionsRef.current,
-        { ...region, data: { ...region.data, systemRegionId: -1 } },
-      ]);
-    },
-    [regionsRef]
-  );
-
-  /**
-   * Load audio packets and create webgraph
-   */
-
-  const handleWSMount = useCallback(
-    (waveSurfer) => {
-      wavesurferRef.current = waveSurfer;
-      if (wavesurferRef.current) {
-        console.log("WaveSurfer instance mounted.");
-        wavesurferRef.current.params.waveColor = "#2196f3";
-        wavesurferRef.current.params.progressColor = "#000000";
-        wavesurferRef.current.params.backgroundColor = "#0000";
-        wavesurferRef.current.params.responsive = true;
-        wavesurferRef.current.params.fillParent = true;
-        wavesurferRef.current.params.scrollParent = true;
-        wavesurferRef.current.setHeight(210);
-
-        wavesurferRef.current.on("region-created", regionCreatedHandler);
-
-        wavesurferRef.current.on("ready", () => {
-          console.log("WaveSurfer is ready");
-        });
-
-        wavesurferRef.current.on("region-removed", (region) => {
-          console.log("region-removed --> ", region);
-        });
-
-        wavesurferRef.current.on("loading", (data) => {
-          console.log("loading --> ", data);
-        });
-
-        wavesurferRef.current.on("play", () => {
-          setIsPlaying(true);
-        });
-
-        wavesurferRef.current.on("pause", () => {
-          try {
-            ReactDOM.render("", document.getElementById("transcriptionDiv"));
-            setIsPlaying(false);
-          } catch {}
-        });
-
-        wavesurferRef.current.on("audioprocess", () => {
-          var t = wavesurferRef.current.getCurrentTime();
-          setPlayTime(t);
-        });
-
-        wavesurferRef.current.on("finish", () => {
-          ReactDOM.render("", document.getElementById("transcriptionDiv"));
-          setIsPlaying(false);
-        });
-
-        if (window) {
-          window.surferidze = wavesurferRef.current;
-        }
-      } else {
-        console.error("WaveSurfer instance is not mounted.");
-      }
-    },
-    [regionCreatedHandler]
-  );
-
-  /**
-   * Manage region update in webgraph
-   */
-  const handleRegionUpdate = useCallback((region, smth) => {
-    // console.log("region-update-end --> region:", region);
-    // console.log(smth);
-  }, []);
-
-  const [playTime, setPlayTime] = useState(null);
-
-  /**
-   * Handle transcription display while playing the audio and on change of language togglge
-   */
-  useEffect(() => {
-    // console.log(playTime);
-    try {
-      // console.log(displayEnglish);
-      var speech = callInsight.speech;
-      for (let i = 0; i < speech.length; i++) {
-        if (playTime >= speech[i].startTime && playTime <= speech[i].endTime) {
-          var dialogue = "";
-          if (displayEnglish) dialogue = speech[i].dialogue;
-          else dialogue = speech[i].early_dialogue;
-          if (speech[i].speaker === "agent") {
-            ReactDOM.render(
-              <div className="transcription-customer-section clearfix">
-                <h4>Agent</h4>
-                <div className="customer-info-right">
-                  <span>{speech[i].startTime}</span>
-                  <p>
-                    <Highlighter
-                      highlightClassName="YourHighlightClass"
-                      searchWords={[callInsight.product]}
-                      autoEscape={true}
-                      textToHighlight={dialogue}
-                    />
-                  </p>
-                  <span>{speech[i].endTime}</span>
-                </div>
-              </div>,
-              document.getElementById("transcriptionDiv")
-            );
-          } else {
-            ReactDOM.render(
-              <div className="transcription-customer-section clearfix">
-                <h4>Customer</h4>
-                <div className="customer-info-right">
-                  <span>{speech[i].startTime}</span>
-                  <p>
-                    <Highlighter
-                      highlightClassName="YourHighlightClass"
-                      searchWords={[callInsight.product]}
-                      autoEscape={true}
-                      textToHighlight={dialogue}
-                    />
-                  </p>
-                  <span>{speech[i].endTime}</span>
-                </div>
-              </div>,
-              document.getElementById("transcriptionDiv")
-            );
-          }
-          break;
-        }
-      }
-    } catch (e) {
-      // console.log(e);
-    }
-  }, [playTime, displayEnglish]);
-
-  useEffect(() => {
-    return () => {
-      try {
-        wavesurferRef.current.pause();
-      } catch {}
-    };
-  }, []);
-
-  const [dbsCategory, setDbsCategory] = useState("");
-
-  const fetchDbsCategory = async () => {
-    try {
-      const res = await services.get("api/product/trade_info/");
-
-      // console.log(res, "dbs category");
-      setDbsCategory(res);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchDbsCategory();
-  }, []);
-
-  const [showArchiveModel, setShowArchiveModel] = useState(false);
-  function markArchive() {
+  // archive call function
+  const markArchive = function () {
     var data = {
       archive_status: true,
     };
@@ -769,109 +140,92 @@ function Callinsight() {
       if (res == "TypeError: Failed to fetch") {
         // console.log("failed to fetch user");
       } else {
-        NotificationManager.success("Success", "Task Closed");
-        setShowArchiveModel(false);
+        toast.success("Success", "Call Archived");
+        setArchivecall(false);
+        navigate("/call-list");
       }
     });
-  }
+  };
+  const [transcriptions, setTranscriptions] = useState([]); // Full transcription list
+  const transcriptRef = useRef(null); // Reference to the transcription div
 
-  const [showOpportunitySRModel, setShowOpportunitySRModel] = useState(false);
-  const [clickType, setClickType] = useState(null);
+  const waveformRef = useRef(null);
+  const wavesurferRef = useRef(null);
 
-  function clickOpportunitySRModel(type) {
-    setClickType(type);
-    setShowOpportunitySRModel(true);
-  }
+  useEffect(() => {
+    if (waveformRef.current && callInsight?.audio_file) {
+      wavesurferRef.current = WaveSurfer.create({
+        container: waveformRef.current,
+        waveColor: "#2196f3",
+        url: `${callInsight?.audio_file}`,
+        minPxPerSec: 100,
+        plugins: [TimelinePlugin.create()],
+        height: 200,
+      });
 
-  /**
-   * Fetch product list from new call supporting info API
-   */
-  const [supportingInfo, setSupportingInfo] = useState();
-  function fetchSupportingInfo() {
-    services.get("api/call/new_call/").then((res) => {
-      // console.log(res);
-      if (res == "TypeError: Failed to fetch") {
-      } else {
-        if (res.code == "token_not_valid") {
-          localStorage.clear();
-          history.push("/login");
+      wavesurferRef.current.load(callInsight.audio_file);
+
+      wavesurferRef.current.on("play", () => setIsPlaying(true));
+      wavesurferRef.current.on("pause", () => setIsPlaying(false));
+      wavesurferRef.current.on("finish", () => setIsPlaying(false));
+
+      // Sync transcription with audio time
+      const updateTranscription = () => {
+        const currentTime = wavesurferRef.current.getCurrentTime();
+        const activeDialogue = callInsight.speech.find(
+          (entry) =>
+            currentTime >= entry.startTime && currentTime <= entry.endTime
+        );
+        if (activeDialogue) {
+          setActiveTranscript(activeDialogue.dialogue);
+          // Optionally scroll to the active dialogue (see below)
+        } else {
+          setActiveTranscript(null); // Clear if no active dialogue
         }
-        setSupportingInfo(res);
-      }
-    });
-  }
-
-  const [productID, setProductID] = useState(null);
-  const [keyword, setkeyword] = useState(null);
-  const [status, setStatus] = useState(null);
-
-  function CreateOpportunitySR() {
-    if (productID === null || keyword === null || status === "") {
-      NotificationManager.error("Error", "All the fields are mandatory");
-    } else {
-      var data = {
-        product_id: productID,
-        keyword: keyword,
-        review_status: status,
       };
-      if (clickType === "Opportunity") {
-        services
-          .post(`api/call/${callID}/create_opportunity/`, data)
-          .then((res) => {
-            // console.log(res);
-            if (res == "TypeError: Failed to fetch") {
-              // console.log("failed to fetch user");
-            } else {
-              NotificationManager.success("Success", "Opportunity Creatred");
-              setShowOpportunitySRModel(false);
-              setProductID(null);
-              setkeyword(null);
-              setStatus(null);
-            }
-          });
-      } else {
-        services
-          .post(`api/call/${callID}/create_service_request/`, data)
-          .then((res) => {
-            // console.log(res);
-            if (res == "TypeError: Failed to fetch") {
-              // console.log("failed to fetch user");
-            } else {
-              NotificationManager.success(
-                "Success",
-                "Service Requested Creatred"
-              );
-              setShowOpportunitySRModel(false);
-              setProductID(null);
-              setkeyword(null);
-              setStatus(null);
-            }
-          });
+
+      wavesurferRef.current.on("audioprocess", updateTranscription);
+      wavesurferRef.current.on("seek", updateTranscription); // Update on manual seek
+
+      return () => {
+        if (wavesurferRef.current) {
+          wavesurferRef.current.destroy();
+        }
+      };
+    }
+  }, [callInsight?.audio_file]);
+
+  useEffect(() => {
+    if (callInsight?.speech) {
+      setTranscriptions(callInsight.speech);
+    }
+  }, [callInsight]);
+
+  // Auto-scroll to active transcript
+  useEffect(() => {
+    if (transcriptRef.current && activeTranscript) {
+      const activeElement =
+        transcriptRef.current.querySelector(`[data-active="true"]`);
+      if (activeElement) {
+        activeElement.scrollIntoView({ behavior: "smooth", block: "nearest" });
       }
     }
-  }
+  }, [activeTranscript]);
 
-  const [category, setCategory] = useState("");
-
-  // async function callCategory() {
-  //   let url = `/api/call/${callID}/pcvc_insight/`;
-
-  //   const res = await services
-  //     .get(url)
-
-  //     .then((res) => {
-  //       setCategory(res);
-  //     });
-  // }
-
-  // useEffect(() => {
-  //   callCategory();
-  // }, []);
-
-  const capitalizeTwoWords = (str) => {
-    return str.replace(/\b\w/g, (char) => char.toUpperCase());
+  const handlePlayPause = () => {
+    console.log("getting here");
+    if (wavesurferRef.current) {
+      wavesurferRef.current.playPause();
+      setIsPlaying(!isPlaying);
+    }
   };
-
+  useEffect(() => {
+    if (archivecall || opportunity) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }, [archivecall, opportunity]);
   return (
     <div>
       <Header />
@@ -903,7 +257,7 @@ function Callinsight() {
                   "border border-[#C3C3C3] hover:border-none text-[16px] flex justify-center items-center p-[10px] hover:bg-[#271078] hover:text-white transition duration-300 ease-out hover:ease-in-out w-auto h-[44px] rounded-lg mr-4 "
                 }
                 name={"Archive call"}
-                onclick={() => {}}
+                onclick={() => setArchivecall(true)}
                 imgSrc={archive}
                 isPending={""}
               />
@@ -912,7 +266,7 @@ function Callinsight() {
                   "border border-[#C3C3C3] hover:border-none text-[16px] flex justify-center items-center p-[10px] hover:bg-[#271078] hover:text-white transition duration-300 ease-out hover:ease-in-out w-auto h-[44px] rounded-lg mr-4 "
                 }
                 name={"New Opportunity"}
-                onclick={() => {}}
+                onclick={() => setopportunity(true)}
                 imgSrc={plus}
                 isPending={""}
               />
@@ -1047,7 +401,6 @@ function Callinsight() {
                 ) : (
                   <img src={minusred} alt="minus-icon" className="ml-1 mr-1" />
                 )}
-                &nbsp;
                 {Math.abs((callInsight?.agent_sentiment * 100).toFixed(2))} %
               </div>
               <div className=" flex justify-center">
@@ -1057,7 +410,6 @@ function Callinsight() {
                 ) : (
                   <img src={minusred} alt="minus-icon" className="ml-1 mr-1" />
                 )}
-                &nbsp;
                 {Math.abs((callInsight?.customer_sentiment * 100).toFixed(2))} %
               </div>
             </div>
@@ -1070,11 +422,21 @@ function Callinsight() {
                   </span>
                 </span>
                 <button
-                  className="p-[10px] border rounded-lg flex items-center border-[#C3C3C3]"
-                  onClick={play}
+                  className={`p-[10px] border rounded-lg flex items-center border-[#C3C3C3] cursor-pointer group ${
+                    isPlaying
+                      ? "bg-[#271078] hover:bg-none text-white"
+                      : "bg-white hover:bg-gray-400 hover:text[#271078]"
+                  }`}
+                  onClick={handlePlayPause}
                 >
-                  <img src={playIcon} alt="play-icon" className=" mr-2" />
-                  Play
+                  <img
+                    src={playIcon}
+                    alt="play-icon"
+                    className={`mr-2 ${
+                      isPlaying ? " invert brightness-0" : ""
+                    }`}
+                  />
+                  {isPlaying ? "Pause" : "Play"}
                 </button>
               </div>
               <div
@@ -1085,22 +447,7 @@ function Callinsight() {
                 }}
               >
                 {!isPending && (
-                  <WaveSurfer
-                    plugins={plugins}
-                    onMount={handleWSMount}
-                    scrollParent="true"
-                  >
-                    <div id="timeline" />
-                    <WaveForm id="waveform">
-                      {regions.map((regionProps) => (
-                        <Region
-                          onUpdateEnd={handleRegionUpdate}
-                          key={regionProps.id}
-                          {...regionProps}
-                        />
-                      ))}
-                    </WaveForm>
-                  </WaveSurfer>
+                  <div id="waveform" ref={waveformRef} className="mt-4"></div>
                 )}
               </div>
             </div>
@@ -1258,7 +605,8 @@ function Callinsight() {
                             {(callInsight?.agent_sentiment * 100).toFixed(2)}%
                           </td>
                           <td className="py-3 border-t">
-                            {(callInsight?.agent_sentiment * 100).toFixed(2)}%
+                            {(callInsight?.customer_sentiment * 100).toFixed(2)}
+                            %
                           </td>
                         </tr>
                         <tr className="text-nowrap">
@@ -1313,8 +661,138 @@ function Callinsight() {
                 </>
               )}
             </div>
-            <div className=" bg-white w-full rounded-[12px] px-4 py-2">
-              hyhy
+            <div className="bg-white w-full rounded-[12px] px-4 py-2 text-[18px] leading-7">
+              <span className="flex justify-between items-center mb-4 mt-4">
+                <div className="flex items-center ">
+                  <img
+                    src={transcription}
+                    alt="agent"
+                    className="mr-2 w-6 h-6"
+                  />
+                  <span className="text-[18px] leading-7">Transcription</span>
+                </div>
+
+                <div className="toggle-switch">
+                  <label>
+                    {isLanguageEnglish && "English"}
+                    {!isLanguageEnglish && displayEnglish && "English"}
+                    {!isLanguageEnglish &&
+                      !displayEnglish &&
+                      callInsight?.language}
+                  </label>
+                  {callInsight?.language !== "English" && (
+                    <div className="toggle-switch-intregrate">
+                      <input
+                        type="checkbox"
+                        id="switch"
+                        onChange={() => {
+                          setDisplayEnglish(!displayEnglish);
+                          english = !english;
+                        }}
+                      />{" "}
+                      <label htmlFor="switch"></label>
+                    </div>
+                  )}
+                </div>
+              </span>
+
+              <div
+                ref={transcriptRef}
+                className="border border-[#E6E6E6] h-[250px] overflow-y-auto mt-4 rounded-lg p-3 text-[#171717] text-[17px] mb-3"
+              >
+                {isPending
+                  ? "Fetching transcription..."
+                  : transcriptions.length > 0 && !isPlaying
+                  ? transcriptions.map((entry, index) => (
+                      <div
+                        key={index}
+                        data-active={
+                          activeTranscript === entry.dialogue ? "true" : "false"
+                        } // Kept for scroll functionality
+                        className="mb-2 p-2 rounded-lg bg-[#F9FCFF] text-[#171717] flex flex-row text-[20px]"
+                      >
+                        <div>
+                          <span className="text-sm opacity-75">
+                            ({entry.startTime}s - {entry.endTime}s{/* ,{" "} */}
+                            {/* {entry.emotion} */})
+                          </span>
+                          <span className="font-semibold mr-2 flex items-center">
+                            {entry.speaker === "agent" ? (
+                              <>
+                                <img src={agentIc} className="mr-2" />{" "}
+                                <span> Agent : </span>
+                              </>
+                            ) : (
+                              <>
+                                <img src={personIc} className="mr-2" />{" "}
+                                <span> Customer : </span>
+                              </>
+                            )}
+                          </span>
+                        </div>
+                        {!displayEnglish ? (
+                          <p className="w-[80%] mt-7">{entry.early_dialogue}</p>
+                        ) : (
+                          <p className="w-[80%] mt-7">{entry?.dialogue}</p>
+                        )}
+
+                        {/* <span className="text-sm opacity-75">
+                          ({entry.startTime}s - {entry.endTime}s,{" "}
+                          {entry.emotion})
+                        </span> */}
+                      </div>
+                    ))
+                  : transcriptions
+                      .filter((entry) => entry.dialogue === activeTranscript)
+                      .map((entry, index) => (
+                        <div
+                          key={index}
+                          className="mb-2 p-2 rounded-lg bg-[#F9FCFF] text-[#171717] flex flex-row items-start"
+                        >
+                          <div>
+                            <span className="text-sm opacity-75">
+                              ({entry.startTime}s - {entry.endTime}s
+                              {/* ,{" "} */}
+                              {/* {entry.emotion} */})
+                            </span>
+                            <span className="font-semibold flex items-center mr-4">
+                              {entry.speaker === "agent" ? (
+                                <>
+                                  <img src={agentIc} className="mr-2" />{" "}
+                                  <span>Agent :</span>
+                                </>
+                              ) : (
+                                <>
+                                  <img src={personIc} className="mr-2" />{" "}
+                                  <span>Customer :</span>
+                                </>
+                              )}
+                            </span>
+                          </div>
+                          <div className="flex-1 mt-7">
+                            {displayEnglish ? (
+                              <Highlighter
+                                highlightClassName="text-black bg-white"
+                                searchWords={[activeTranscript || ""]}
+                                autoEscape={true}
+                                textToHighlight={entry.dialogue}
+                                // className="ml-4"
+                                className=" text-[20px]"
+                              />
+                            ) : (
+                              <Highlighter
+                                highlightClassName="text-black bg-white"
+                                searchWords={[activeTranscript || ""]}
+                                autoEscape={true}
+                                textToHighlight={entry.early_dialogue}
+                                // className="ml-4"
+                                className=" text-[20px]"
+                              />
+                            )}
+                          </div>
+                        </div>
+                      ))}
+              </div>
             </div>
 
             <div className=" bg-white w-full rounded-[12px] px-4 py-2 text-[18px] leading-7">
@@ -1332,12 +810,14 @@ function Callinsight() {
               ))}
             </div>
 
-            {/* <div className="bg-white w-full rounded-[12px] px-4 py-2">
-              
-              
-            </div> */}
-            <div className=" bg-white w-full rounded-[12px] px-4 py-2">
-              hhhh
+            <div className="bg-white w-full rounded-[12px] px-4 py-2 text-[18px] leading-7">
+              <div className="flex items-center">
+                <img src={money} alt="agent" className="mr-2 w-6 h-6" />
+                <span className="text-[18px] leading-7">Collection Status</span>
+              </div>
+              <div className="border border-[#E6E6E6] h-auto overflow-y-auto mt-4 rounded-lg p-3 text-[#171717] text-[17px] mb-3">
+                Featching Collection Status
+              </div>
             </div>
             <div className=" bg-white w-full rounded-[12px] px-4 py-2 text-[18px] leading-7">
               <div className=" flex items-center">
@@ -1348,9 +828,229 @@ function Callinsight() {
                 {callInsight?.ai_summary.summary}
               </div>
             </div>
+            <div className="bg-white w-full rounded-[12px] px-4 py-2 text-[18px] leading-7">
+              <div className="flex items-center">
+                <img src={calldatabase} alt="agent" className="mr-2 w-5 h-5" />
+                <span className="text-[18px] leading-7">Call category</span>
+              </div>
+              <div className="border border-[#E6E6E6] h-auto overflow-y-auto mt-4 rounded-lg p-3 text-[#171717] text-[17px] mb-3">
+                Featching Collection Status
+              </div>
+            </div>
           </Masonry>
         </ResponsiveMasonry>
       </div>
+      {archivecall && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75 transition-opacity">
+          <div className="bg-white p-6 shadow-lg h-[180px] w-[425px] rounded-xl flex justify-center flex-col items-center">
+            <div className="mb-6 text-[22px] leading-5 font-medium tracking-wide">
+              Do you want to Archive this call ?
+            </div>
+            <div>
+              <button
+                className=" h-[44px] w-[150px] border border-[#171717] rounded-lg mr-2 hover:bg-red-600 hover:text-white transition duration-300 ease-out hover:ease-in-out hover:border-none"
+                onClick={() => setArchivecall(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className=" h-[44px] w-[150px] border border-[#171717] rounded-lg hover:bg-[#271078] hover:text-white transition duration-300 ease-out hover:ease-in-out  hover:border-none"
+                onClick={markArchive}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {opportunity && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75 transition-opacity z-10">
+          <div className="bg-white p-6 shadow-lg h-[425px] w-[1170px] rounded-xl flex flex-col">
+            <div className=" flex justify-center mb-2 items-center text-[28px] font-medium text-[#838383]">
+              <img src={callIcon} alt="call-icon" className=" mr-3" />
+              Create New Opportunity
+            </div>
+            <hr className="my-4" />
+            <div className=" flex flex-wrap mt-5 px-12">
+              <span className="flex flex-col mb-4 mr-5">
+                <span className=" flex items-center ">
+                  <img
+                    src={product}
+                    alt="call-icon"
+                    className="h-4 w-4 mr-2"
+                  ></img>
+                  <label className="text-[16px]">Product</label>
+                </span>
+
+                <select
+                  className={`mt-2 w-[492px] h-[44px] border  rounded-lg focus:outline-none custom-select px-4  focus:text-black cursor-pointer
+                              
+                               `}
+                  // onChange={(e) =>
+                  //   handelBulkcall("call_type", e.target.value)
+                  // }
+                  // onFocus={() => clearError("call_type")}
+                  name="call_type"
+                  id="call_type"
+                  // value={bulkcalldata.call_type}
+                >
+                  <option
+                    value=""
+                    // selected
+                    disabled
+                    className="text-gray-400"
+                  >
+                    Select Call Type
+                  </option>
+                  {/* {supportingInfo?.call_type.map((callType, i) => (
+                                  <option
+                                    key={i}
+                                    value={callType.title}
+                                    className="text-black"
+                                  >
+                                    {callType.title}
+                                  </option>
+                                ))} */}
+                </select>
+                {/* {bulkerror.call_type && (
+                                <div className="flex items-center mt-1">
+                                  <img
+                                    src={errorIcon}
+                                    alt="error-icon"
+                                    className="h-4 w-4 mr-1"
+                                  />
+                                  <span className=" text-[#f50a0a] text-[14px]">
+                                    {bulkerror.call_type}{" "}
+                                  </span>
+                                </div>
+                              )} */}
+              </span>
+              <span className="flex flex-col mb-4 mr-5">
+                <span className=" flex items-center ">
+                  <img
+                    src={keyword}
+                    alt="call-icon"
+                    className="h-4 w-4 mr-2"
+                  ></img>
+                  <label className="text-[16px]">Key Word</label>
+                </span>
+
+                <select
+                  className={`mt-2 w-[492px] h-[44px] border  rounded-lg focus:outline-none custom-select px-4  focus:text-black cursor-pointer
+                              
+                               `}
+                  // onChange={(e) =>
+                  //   handelBulkcall("call_type", e.target.value)
+                  // }
+                  // onFocus={() => clearError("call_type")}
+                  name="call_type"
+                  id="call_type"
+                  // value={bulkcalldata.call_type}
+                >
+                  <option
+                    value=""
+                    // selected
+                    disabled
+                    className="text-gray-400"
+                  >
+                    Select Call Type
+                  </option>
+                  {/* {supportingInfo?.call_type.map((callType, i) => (
+                                  <option
+                                    key={i}
+                                    value={callType.title}
+                                    className="text-black"
+                                  >
+                                    {callType.title}
+                                  </option>
+                                ))} */}
+                </select>
+                {/* {bulkerror.call_type && (
+                                <div className="flex items-center mt-1">
+                                  <img
+                                    src={errorIcon}
+                                    alt="error-icon"
+                                    className="h-4 w-4 mr-1"
+                                  />
+                                  <span className=" text-[#f50a0a] text-[14px]">
+                                    {bulkerror.call_type}{" "}
+                                  </span>
+                                </div>
+                              )} */}
+              </span>
+              <span className="flex flex-col mb-4 mr-5">
+                <span className=" flex items-center ">
+                  <img
+                    src={status}
+                    alt="call-icon"
+                    className="h-4 w-4 mr-2"
+                  ></img>
+                  <label className="text-[16px]">Status</label>
+                </span>
+
+                <select
+                  className={`mt-2 w-[492px] h-[44px] border  rounded-lg focus:outline-none custom-select px-4  focus:text-black cursor-pointer
+                              
+                               `}
+                  // onChange={(e) =>
+                  //   handelBulkcall("call_type", e.target.value)
+                  // }
+                  // onFocus={() => clearError("call_type")}
+                  name="call_type"
+                  id="call_type"
+                  // value={bulkcalldata.call_type}
+                >
+                  <option
+                    value=""
+                    // selected
+                    disabled
+                    className="text-gray-400"
+                  >
+                    Select Call Type
+                  </option>
+                  {/* {supportingInfo?.call_type.map((callType, i) => (
+                                  <option
+                                    key={i}
+                                    value={callType.title}
+                                    className="text-black"
+                                  >
+                                    {callType.title}
+                                  </option>
+                                ))} */}
+                </select>
+                {/* {bulkerror.call_type && (
+                                <div className="flex items-center mt-1">
+                                  <img
+                                    src={errorIcon}
+                                    alt="error-icon"
+                                    className="h-4 w-4 mr-1"
+                                  />
+                                  <span className=" text-[#f50a0a] text-[14px]">
+                                    {bulkerror.call_type}{" "}
+                                  </span>
+                                </div>
+                              )} */}
+              </span>
+            </div>
+            <hr className=" my-4" />
+            <div className="flex justify-end mt-2">
+              <button
+                className="h-[44px] w-[150px] border border-[#171717] rounded-lg mr-2 hover:bg-red-600 hover:text-white transition duration-300 ease-out hover:ease-in-out hover:border-none"
+                onClick={() => setopportunity(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="h-[44px] w-[150px] border border-[#171717] rounded-lg hover:bg-[#271078] hover:text-white transition duration-300 ease-out hover:ease-in-out hover:border-none"
+                // onClick={markArchive}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

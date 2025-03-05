@@ -225,7 +225,7 @@ function Home() {
     fetchServiceRequest();
   }, []);
 
-  console.log("lead.....", serviceRequestStatus);
+  // console.log("lead.....", serviceRequestStatus);
 
   return (
     <div>
