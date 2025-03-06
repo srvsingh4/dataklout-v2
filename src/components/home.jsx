@@ -797,7 +797,7 @@ function Home() {
             )}
           </div>
 
-          <div className="border bg-white w-full rounded-xl p-4 h-auto self-start">
+          <div className="border bg-white w-full rounded-xl p-4 h-auto self-start  mb-14">
             <div className="flex items-center">
               <img
                 src={intent}

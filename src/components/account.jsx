@@ -24,6 +24,8 @@ import Progressbar from "./common/progressbar";
 import close from "../assets/Icons/account/close.svg";
 import eyesOn from "../assets/Icons/account/visibility_on.svg";
 import eyesOff from "../assets/Icons/account/visibility_off.svg";
+import emailplus from "../assets/Icons/account/add_circle.svg";
+import edit from "../assets/Icons/account/edit_square.svg";
 
 function Account({ loginStatus }) {
   Account.propTypes = {
@@ -44,6 +46,7 @@ function Account({ loginStatus }) {
   const [uploadPending, setUploadPending] = useState(false);
   const [uploadError, setUploadError] = useState("");
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [email, setemail] = useState("");
   const [otpBox, setOtpBox] = useState(false);
   const [otpText, setotpText] = useState("Verify Email");
   const [resendotp, setResendotp] = useState(true);
@@ -51,8 +54,8 @@ function Account({ loginStatus }) {
   const [logoutconfirm, setLogoutconfirm] = useState(false);
   const [newpasseye, setNewpasseye] = useState(false);
   const [conpasseye, setConpasseye] = useState(false);
-
-  console.log("account", url);
+  const [editemail, setEditemail] = useState(false);
+  const [addemail, setaddemail] = useState(false);
 
   useEffect(() => {
     fetchUserData();
@@ -222,20 +225,28 @@ function Account({ loginStatus }) {
     }
   };
 
-  const sendOtpAgain = function () {
-    setResendotp(false);
-    setTimeout(() => {
-      setResendotp(true);
-    }, 2000);
+  const verifyOtp = function () {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+    if (!email) {
+      toast.error("Please Enter Email Address");
+    } else if (!emailRegex.test(email)) {
+      toast.error("Please Enter a Valid Email Address");
+    } else {
+      toast.success("Otp sent to Email Address");
+      setOtpBox(true);
+      setTimeout(() => {
+        setResendotp(true);
+      }, 100);
+    }
   };
 
-  const verifyOtp = function () {
-    toast.success("Success", "Otp sent to Email Address");
-    setOtpBox(true);
-    setotpText("Resend OTP");
-    // setTimeout(() => {
-    // }, 2000);
-  };
+  // const sendOtpAgain = function () {
+  //   setResendotp(false);
+  //   setTimeout(() => {
+  //     setResendotp(true);
+  //   }, 2000);
+  // };
 
   return (
     <div>
@@ -256,7 +267,7 @@ function Account({ loginStatus }) {
               <div className="h-5 w-28 bg-gray-300 mt-2 rounded animate-pulse"></div>
             </div>
           ) : (
-            <div className="flex justify-center items-center h-[350px] border border-gray-300 rounded-lg flex-col">
+            <div className="flex justify-center items-center h-[420px] border border-gray-300 rounded-lg flex-col">
               <img
                 src={services?.domain + selfDetails?.image}
                 alt=""
@@ -323,23 +334,23 @@ function Account({ loginStatus }) {
               />{" "}
               Change Profile Photo
             </div>
-            <div
+            {/* <div
               className={`mb-4   p-3  rounded-xl flex text-[#5F6368] font-medium text-[18px] cursor-pointer ${
-                tab === "message"
+                tab === "email"
                   ? "bg-[#271078] text-white  hover:border-none"
                   : "text-[#5F6368] hover:bg-gray-200"
               }`}
-              onClick={() => setTab("message")}
+              onClick={() => setTab("email")}
             >
               <img
                 src={message}
                 alt=""
                 className={`mr-2 ${
-                  tab === "message" ? "invert brightness-0" : ""
+                  tab === "email" ? "invert brightness-0" : ""
                 }`}
               />{" "}
               Add Email Address
-            </div>
+            </div> */}
             <div
               className="mb-4   p-3  rounded-xl flex text-[#5F6368] font-medium text-[18px] cursor-pointer hover:bg-gray-200"
               onClick={() => setLogoutconfirm(true)}
@@ -379,8 +390,87 @@ function Account({ loginStatus }) {
                     <span className="flex font-bold w-[30%] text-[18px]">
                       Email Address
                     </span>
-                    <span className="text-[#171717]">
-                      {selfDetails?.email || "-"}
+                    <span className="text-[#171717] flex w-[60%] items-center">
+                      {selfDetails?.first_name ? (
+                        !editemail ? (
+                          <>
+                            selfDetailsemail@gmail.com
+                            <div
+                              className="relative group"
+                              onClick={() => setEditemail(true)}
+                            >
+                              <img
+                                src={edit}
+                                alt=""
+                                className="ml-4 cursor-pointer"
+                              />
+                              <span className="absolute left-0 top-7 px-3 z-4 bg-[#D2D2D2] rounded-lg text-[#171717] border shadow-lg hidden group-hover:block transition-opacity duration-300">
+                                Edit
+                              </span>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <input
+                              type="email"
+                              id="picture"
+                              className="w-full border border-[#D2D2D2] p-2 rounded-lg"
+                              accept="image/*"
+                              onChange={(e) => setemail(e.target.value)}
+                            />
+                            <button
+                              className=" ml-4 border border-[#D2D2D2] px-4 rounded-md h-[30px] hover:bg-[#271078] hover:text-white hover:border-none"
+                              onClick={() => setEditemail(false)}
+                            >
+                              Save
+                            </button>
+                            <button
+                              className=" ml-4 border border-[#D2D2D2] px-4 rounded-md h-[30px] hover:bg-red-600 hover:text-white hover:border-none"
+                              onClick={() => setEditemail(false)}
+                            >
+                              Cancel
+                            </button>
+                          </>
+                        )
+                      ) : addemail ? (
+                        <>
+                          <input
+                            type="email"
+                            id="picture"
+                            className="w-full border border-[#D2D2D2] p-2 rounded-lg"
+                            accept="image/*"
+                            // onChange={(e) => setemail(e.target.value)}
+                          />
+                          <button
+                            className=" ml-4 border border-[#D2D2D2] px-4 rounded-md h-[30px] hover:bg-[#271078] hover:text-white hover:border-none"
+                            onClick={() => setaddemail(false)}
+                          >
+                            Save
+                          </button>
+                          <button
+                            className=" ml-4 border border-[#D2D2D2] px-4 rounded-md h-[30px]  hover:bg-red-600 hover:text-white hover:border-none"
+                            onClick={() => setaddemail(false)}
+                          >
+                            Cancel
+                          </button>
+                        </>
+                      ) : (
+                        <div
+                          className=" flex cursor-pointer"
+                          onClick={() => setaddemail(true)}
+                        >
+                          <img
+                            src={emailplus}
+                            alt=""
+                            className={`mr-2 group-hover:invert group-hover:brightness-0 ${
+                              uploadFile ? "invert" : ""
+                            }`}
+                          />{" "}
+                          <span className=" font-medium text-[#2854C5]">
+                            Add Email
+                          </span>
+                        </div>
+                      )}
                     </span>
                   </div>
                   <div className="flex items-center gap-1 px-4 py-4 border-b border-[#D2D2D2]">
@@ -455,7 +545,7 @@ function Account({ loginStatus }) {
                       <img
                         src={newpasseye ? eyesOn : eyesOff}
                         alt=""
-                        className=" absolute right-14"
+                        className=" absolute right-14 cursor-pointer"
                         onClick={() => setNewpasseye(!newpasseye)}
                       />
                     )}
@@ -481,7 +571,7 @@ function Account({ loginStatus }) {
                       <img
                         src={conpasseye ? eyesOn : eyesOff}
                         alt=""
-                        className=" absolute right-14"
+                        className=" absolute right-14 cursor-pointer"
                         onClick={() => setConpasseye(!conpasseye)}
                       />
                     )}
@@ -579,8 +669,60 @@ function Account({ loginStatus }) {
               </div>
             </div>
           )}
+          {/* {tab === "email" && (
+            <div>
+              <div className="px-6 py-4 mt-4">
+                <div className="flex items-center gap-[20px] flex-col">
+                  <div className="w-full flex items-center gap-2">
+                    <img src={message} alt="" className="mr-1" />
+                    <label
+                      htmlFor="picture"
+                      className="text-[20px] whitespace-nowrap w-[30%] font-semibold"
+                    >
+                      Email Address
+                    </label>
+                    <div className=" w-full">
+                      <input
+                        type="email"
+                        id="picture"
+                        className="w-full border border-[#D2D2D2] p-2 rounded-lg"
+                        accept="image/*"
+                        onChange={(e) => setemail(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <p
+                  className=" flex justify-end text-[#3E1ABC] mt-2 text-[14px] cursor-pointer"
+                  onClick={verifyOtp}
+                >
+                  {otpText}
+                </p>
+
+                <div className="flex gap-2 mt-4 justify-end group ml-10">
+                  <button
+                    className={`border border-gray-300 rounded-lg p-2 w-[130px] h-[48px] flex items-center justify-center 
+                 hover:bg-[#271078] hover:text-white ${
+                   uploadFile ? "text-black" : "text-[#A3A3A3] "
+                 }`}
+                    onClick={uploadPhoto}
+                  >
+                    <img
+                      src={emailplus}
+                      alt=""
+                      className={`mr-2 group-hover:invert group-hover:brightness-0 ${
+                        uploadFile ? "invert" : ""
+                      }`}
+                    />{" "}
+                    Add Email
+                  </button>
+                </div>
+              </div>
+            </div>
+          )} */}
         </div>
       </div>
+
       {logoutconfirm && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75 transition-opacity">
           <div className="bg-white p-6 shadow-lg h-[180px] w-[425px] rounded-xl flex justify-center flex-col items-center">

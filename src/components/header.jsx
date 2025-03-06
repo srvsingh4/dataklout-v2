@@ -129,7 +129,9 @@ function Header() {
               }}
               alt="profile pic"
               className={`rounded-full ${
-                profiledrop || url === "/account" ? "border border-red-800" : ""
+                profiledrop || url === "/account"
+                  ? "border-4 border-red-800"
+                  : ""
               }`}
             />
             {profiledrop && (

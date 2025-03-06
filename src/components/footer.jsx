@@ -22,7 +22,7 @@ function Footer() {
 
   return (
     <>
-      <footer className=" fixed bottom-0 w-full bg-[#f1f0f0] p-4 ">
+      <footer className=" fixed bottom-0 w-full bg-[#f1f0f0] p-3 ">
         <div className=" mx-4">
           <div className="flex justify-between items-center">
             <div className="text-xs text-[#434343] flex">

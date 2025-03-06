@@ -465,8 +465,8 @@ function CallList() {
         theme="colored"
         hideProgressBar={false}
       />
-      <div className="m-2 flex flex-col pb-2">
-        <div className="border bg-white mr-2 h-full w-full p-6 rounded-[12px]">
+      <div className="m-2 flex flex-col mb-2">
+        <div className="border bg-white mr-2 h-full w-full p-6 rounded-[12px] mb-[55px]">
           <div className="flex justify-between items-center border border-[#D0D0D0] px-4 py-2 rounded-[12px]">
             <span className="flex flex-col">
               <span className="flex items-center">
