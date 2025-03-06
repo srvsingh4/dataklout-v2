@@ -1,7 +1,7 @@
-import website from "../assets/Icons/website.svg";
-import call from "../assets/Icons/call_footer.svg";
-import notes from "../assets/Icons/add_notes.svg";
-import linkedin from "../assets/Icons/linkedin.svg";
+import website from "../assets/icons/website.svg";
+import call from "../assets/icons/call_footer.svg";
+import notes from "../assets/icons/add_notes.svg";
+import linkedin from "../assets/icons/linkedin.svg";
 import Service from "./webservice/http";
 import Masonry from "react-responsive-masonry";
 import { useState } from "react";

@@ -1,6 +1,6 @@
-import website from "../assets/Icons/website.svg";
-import call from "../assets/Icons/call_footer.svg";
-import notes from "../assets/Icons/add_notes.svg";
+import website from "../assets/icons/website.svg";
+import call from "../assets/icons/call_footer.svg";
+import notes from "../assets/icons/add_notes.svg";
 
 function Footer() {
   return (

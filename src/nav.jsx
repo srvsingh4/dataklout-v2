@@ -4,17 +4,17 @@ import { useNavigate } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
 
 import grid from "./assets/images/grid.svg";
-import homeIcon from "./assets/Icons/home.svg";
-import archiveIcon from "./assets/Icons/archive.svg";
-import call from "./assets/Icons/call.svg";
-import opportunity from "./assets/Icons/opportunity.svg";
-import serviceIcon from "./assets/Icons/serviceIcon.svg";
-import dashboard from "./assets/Icons/dashboard.svg";
-import qualityAudit from "./assets/Icons/quality-audit.svg";
-import contact from "./assets/Icons/contact.svg";
-import task from "./assets/Icons/task.svg";
-import usermanage from "./assets/Icons/usermanage.svg";
-import promise from "./assets/Icons/payments.svg";
+import homeIcon from "./assets/icons/home.svg";
+import archiveIcon from "./assets/icons/archive.svg";
+import call from "./assets/icons/call.svg";
+import opportunity from "./assets/icons/opportunity.svg";
+import serviceIcon from "./assets/icons/serviceIcon.svg";
+import dashboard from "./assets/icons/dashboard.svg";
+import qualityAudit from "./assets/icons/quality-audit.svg";
+import contact from "./assets/icons/contact.svg";
+import task from "./assets/icons/task.svg";
+import usermanage from "./assets/icons/usermanage.svg";
+import promise from "./assets/icons/payments.svg";
 
 function Nav() {
   const services = new Service();

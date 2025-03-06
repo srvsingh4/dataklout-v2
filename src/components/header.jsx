@@ -2,18 +2,18 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 import logo from "../assets/images/logo-icon-1.png";
-import dIcon from "../assets/Icons/question-circle.svg";
-import messageIcon from "../assets/Icons/chat-left-text.svg";
+import dIcon from "../assets/icons/question-circle.svg";
+import messageIcon from "../assets/icons/chat-left-text.svg";
 import Service from "./webservice/http";
-import logoutIcon from "../assets/Icons/logout.svg";
-import profile from "../assets/Icons/profile.svg";
-import personIcon from "../assets/Icons/person-circle.svg";
-import closeIcon from "../assets/Icons/close.svg";
-import dataklout from "../assets/Icons/dataklout-logo.svg";
-import mailIcon from "../assets/Icons/mailIcon.svg";
-import addressIcon from "../assets/Icons/address.svg";
-import phoneIcon from "../assets/Icons/phoneIcon.svg";
-import serchIcon from "../assets/Icons/search.svg";
+import logoutIcon from "../assets/icons/logout.svg";
+import profile from "../assets/icons/profile.svg";
+import personIcon from "../assets/icons/person-circle.svg";
+import closeIcon from "../assets/icons/close.svg";
+import dataklout from "../assets/icons/dataklout-logo.svg";
+import mailIcon from "../assets/icons/mailIcon.svg";
+import addressIcon from "../assets/icons/address.svg";
+import phoneIcon from "../assets/icons/phoneIcon.svg";
+import serchIcon from "../assets/icons/search.svg";
 
 function Header() {
   const services = new Service();
