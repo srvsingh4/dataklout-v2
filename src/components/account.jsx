@@ -225,21 +225,21 @@ function Account({ loginStatus }) {
     }
   };
 
-  const verifyOtp = function () {
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  // const verifyOtp = function () {
+  //   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-    if (!email) {
-      toast.error("Please Enter Email Address");
-    } else if (!emailRegex.test(email)) {
-      toast.error("Please Enter a Valid Email Address");
-    } else {
-      toast.success("Otp sent to Email Address");
-      setOtpBox(true);
-      setTimeout(() => {
-        setResendotp(true);
-      }, 100);
-    }
-  };
+  //   if (!email) {
+  //     toast.error("Please Enter Email Address");
+  //   } else if (!emailRegex.test(email)) {
+  //     toast.error("Please Enter a Valid Email Address");
+  //   } else {
+  //     toast.success("Otp sent to Email Address");
+  //     setOtpBox(true);
+  //     setTimeout(() => {
+  //       setResendotp(true);
+  //     }, 100);
+  //   }
+  // };
 
   // const sendOtpAgain = function () {
   //   setResendotp(false);
