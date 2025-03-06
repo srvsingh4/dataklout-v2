@@ -53,15 +53,26 @@ const Login = () => {
         localStorage.setItem("usecase", data["usecase"]);
         localStorage.setItem("username", data["username"]);
         localStorage.setItem("collection_module", data["collection_module"]);
-        localStorage.setItem("stock_broking_module", data["stock_broking_module"]);
-        localStorage.setItem("critical_factor_module", data["critical_factor_module"]);
+        localStorage.setItem(
+          "stock_broking_module",
+          data["stock_broking_module"]
+        );
+        localStorage.setItem(
+          "critical_factor_module",
+          data["critical_factor_module"]
+        );
         navigate("/");
         window.location.reload();
       })
       .catch((err) => {
         setIsPending(false);
         // setError(err.message);
-        toast.error(<div><p>{err.message}</p><p>Invalid Username or Password</p></div>);
+        toast.error(
+          <div>
+            <p>{err.message}</p>
+            <p>Invalid Username or Password</p>
+          </div>
+        );
       });
   };
 
@@ -69,7 +80,10 @@ const Login = () => {
     <div className="image min-h-screen flex justify-center items-center">
       <div className="flex border border-white rounded-[20px] flex-row">
         {/* Left side (Login form) */}
-        <div className="border-r border-r-white bg-[#16004B] h-full" style={{ borderRadius: "20px 0px 0px 20px" }}>
+        <div
+          className="border-r border-r-white bg-[#16004B] h-full"
+          style={{ borderRadius: "20px 0px 0px 20px" }}
+        >
           <div className="px-16 pt-10 pb-6">
             <img src={logo} alt="logo" className="h-20 w-2/5" />
             <div className="mt-4 flex flex-col">
@@ -119,7 +133,11 @@ const Login = () => {
             >
               {!isPending ? "Login" : "Checking..."}
             </button>
-            <ToastContainer position="top-center" theme="colored" hideProgressBar={true} />
+            <ToastContainer
+              position="top-center"
+              theme="colored"
+              hideProgressBar={true}
+            />
             <div className="flex justify-between text-white mt-3">
               <span className="font-medium text-[13px] hover:text-[#df643a] cursor-pointer">
                 Use Custom Domain
@@ -137,22 +155,31 @@ const Login = () => {
           <div className="my-4">
             <div className="flex flex-col ml-[17px]">
               <h2 className="text-[18px] font-semibold tracking-wider text-white">
-                Enter Details to Start <span className="text-[#e9be73]">Trial</span> Now!
+                Enter Details to Start{" "}
+                <span className="text-[#e9be73]">Trial</span> Now!
               </h2>
-              <p className="text-white text-[16px] mt-2">No Hidden Charges, No Credit Card.</p>
+              <p className="text-white text-[16px] mt-2">
+                No Hidden Charges, No Credit Card.
+              </p>
             </div>
             <ul className="text-white flex flex-col ">
               <span className="flex flex-row mx-4 my-2">
                 <img src={rightArrow} alt="icon" className="w-4 h-4" />
-                <li className="ml-4 text-[14px]">Upload Your Own Data or use the pre-loaded</li>
+                <li className="ml-4 text-[14px]">
+                  Upload Your Own Data or use the pre-loaded
+                </li>
               </span>
               <span className="flex flex-row mx-4 my-2">
                 <img src={rightArrow} alt="icon" className="w-4 h-4" />
-                <li className="ml-4 text-[14px]">Cloud Based SAAS, Preconfigured Workflow, Reports & Dashboards</li>
+                <li className="ml-4 text-[14px]">
+                  Cloud Based SAAS, Preconfigured Workflow, Reports & Dashboards
+                </li>
               </span>
               <span className="flex flex-row mx-4 my-2">
                 <img src={rightArrow} alt="icon" className="w-4 h-4" />
-                <li className="ml-4 text-[14px]">Preconfigured Based On User Profile</li>
+                <li className="ml-4 text-[14px]">
+                  Preconfigured Based On User Profile
+                </li>
               </span>
             </ul>
             <span className="mx-[62px] flex">
