@@ -391,7 +391,7 @@ function Account({ loginStatus }) {
                       Email Address
                     </span>
                     <span className="text-[#171717] flex w-[60%] items-center">
-                      {selfDetails?.first_name ? (
+                      {selfDetails?.email ? (
                         !editemail ? (
                           <>
                             selfDetailsemail@gmail.com
