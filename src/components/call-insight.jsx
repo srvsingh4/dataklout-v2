@@ -11,7 +11,7 @@ import wave from "../assets/Icons/wave.svg";
 import cxScore from "../assets/Icons/cxScore.svg";
 import cIntent from "../assets/Icons/cIntent.svg";
 import resolutionIcon from "../assets/Icons/resolution.svg";
-import problrmFound from "../assets/Icons/problrmFound.svg";
+import problrmfound from "../assets/Icons/problrmfound.svg";
 import agent from "../assets/Icons/agent.svg";
 import customerI from "../assets/Icons/customerI.svg";
 import plusgreen from "../assets/Icons/plusgreen.svg";
@@ -325,7 +325,7 @@ function Callinsight() {
                 >
                   <div className="flex items-center">
                     <img
-                      src={problrmFound}
+                      src={problrmfound}
                       alt=""
                       className="mr-2 h-[50px] w-[50px]"
                     />

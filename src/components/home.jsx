@@ -12,14 +12,14 @@ import { VscGitPullRequestCreate } from "react-icons/vsc";
 // import addCall from "../assets/Icons/addcall.svg";
 import plusgreen from "../assets/Icons/plusgreen.svg";
 import negative from "../assets/Icons/minusred.svg";
-import callscriptIcon from "../assets/Icons/callScript.svg";
+import callscriptIcon from "../assets/Icons/callscript.svg";
 import Tableskeleton from "./common/tableSkeleton";
 import BlockSkeleton from "./common/blockSkeleton";
-import pendingIcon from "../assets/Icons/pendingTask.svg";
+import pendingicon from "../assets/Icons/pendingtask.svg";
 import faceIcon from "../assets/Icons/faceIcon.svg";
 // import calander from "../assets/Icons/calander.svg";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
-import callBackIcon from "../assets/Icons/callbackIcon.svg";
+import callbackicon from "../assets/Icons/callbackicon.svg";
 import opportunity2 from "../assets/Icons/opportunity2.svg";
 import manager from "../assets/Icons/manger.svg";
 import callblue from "../assets/Icons/callblue.svg";
@@ -383,7 +383,7 @@ function Home() {
           <div className="h-auto border bg-white w-full rounded-xl p-4 self-start">
             <div className="flex items-center">
               <img
-                src={pendingIcon}
+                src={pendingicon}
                 alt="pending tasks icon"
                 className="mr-2 w-[24px] h-[24px]"
               />
@@ -459,7 +459,7 @@ function Home() {
           <div className="border bg-white w-full rounded-xl p-4 h-auto self-start">
             <div className="flex items-center">
               <img
-                src={callBackIcon}
+                src={callbackicon}
                 alt="callback reminders icon"
                 className="mr-2 w-[24px] h-[24px]"
               />
